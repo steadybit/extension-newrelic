@@ -1,4 +1,4 @@
-<img src="./logo.png" height="130" align="right" alt="New Relic logo">
+<img src="./logo.png" height="80" align="right" alt="New Relic logo">
 
 # Steadybit extension-newrelic
 

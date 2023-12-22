@@ -13,11 +13,16 @@ import (
 // through environment variables. Learn more through the documentation of the envconfig package.
 // https://github.com/kelseyhightower/envconfig
 type Specification struct {
-	// This is just a sample configuration value. You can remove it. To be set, you would set the environment
-	// variable STEADYBIT_EXTENSION_ROBOT_NAMES="R2-D2,C-3PO".
-	RobotNames []string `json:"robotNames" split_words:"true" required:"true" default:"Bender,Terminator,R2-D2"`
-	// variable STEADYBIT_EXTENSION_DISCOVERY_ATTRIBUTES_EXCLUDES_ROBOT="robot.label.a,robot.tags.*".
-	DiscoveryAttributesExcludesRobot []string `json:"discoveryAttributesExcludesRobot" split_words:"true" required:"false"`
+	// The New Relic Base Url, like 'https://api.newrelic.com'
+	ApiBaseUrl string `json:"apiBaseUrl" split_words:"true" required:"true"`
+	// The New Relic API Key
+	ApiKey string `json:"apiKey" split_words:"true" required:"true"`
+	// Your New Relic Account Id
+	AccountId string `json:"accountId" split_words:"true" required:"true"`
+	// The New Relic Insights Base Url, like 'https://insights-api.newrelic.com'
+	InsightsApiBaseUrl string `json:"accountId" split_words:"true" required:"true"`
+	// The New Relic Insights Insert Key
+	InsightsInsertKey string `json:"insightsInsertKey" split_words:"true" required:"true"`
 }
 
 var (

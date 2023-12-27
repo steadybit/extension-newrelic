@@ -1,0 +1,14 @@
+STEADYBIT_LOG_LEVEL=info
+STEADYBIT_LOG_FORMAT=text
+STEADYBIT_EXTENSION_UNIX_SOCKET=/run/steadybit/extension-newrelic.sock
+#
+# TODO:
+# Please configure the api token and api base url for your newrelic account
+# For more information visit https://github.com/steadybit/extension-newrelic
+#
+STEADYBIT_EXTENSION_API_BASE_URL=
+STEADYBIT_EXTENSION_API_KEY=
+STEADYBIT_EXTENSION_ACCOUNT_ID=
+STEADYBIT_EXTENSION_INSIGHTS_API_BASE_URL=
+STEADYBIT_EXTENSION_INSIGHTS_INSERT_KEY=
+

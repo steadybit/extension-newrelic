@@ -1,6 +1,21 @@
 # Default values for steadybit-extension-newrelic.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+
+newrelic:
+  # newrelic.apiBaseUrl -- The API base url for the New Relic API, like `https://api.newrelic.com`
+  apiBaseUrl: ""
+  # newrelic.apiKey -- The New Relic API Key
+  apiKey: ""
+  # newrelic.accountId -- Your New Relic Account Id
+  accountId: ""
+  # newrelic.insightsApiBaseUrl -- The New Relic Insights Base Url, like 'https://insights-api.newrelic.com'
+  insightsApiBaseUrl: ""
+  # newrelic.insightsInsertKey -- The New Relic Insights Insert Key
+  insightsInsertKey: ""
+  # newrelic.existingSecret -- If defined, will skip secret creation and instead assume that the referenced secret contains the key `api-key` and `insights-insert-key`.
+  existingSecret: null
+
 image:
   # image.name -- The container image to use for the Steadybit newrelic extension.
   name: ghcr.io/steadybit/extension-newrelic

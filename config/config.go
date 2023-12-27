@@ -20,7 +20,7 @@ type Specification struct {
 	// Your New Relic Account Id
 	AccountId string `json:"accountId" split_words:"true" required:"true"`
 	// The New Relic Insights Base Url, like 'https://insights-api.newrelic.com'
-	InsightsApiBaseUrl string `json:"accountId" split_words:"true" required:"true"`
+	InsightsApiBaseUrl string `json:"insightsApiBaseUrl" split_words:"true" required:"true"`
 	// The New Relic Insights Insert Key
 	InsightsInsertKey string `json:"insightsInsertKey" split_words:"true" required:"true"`
 }

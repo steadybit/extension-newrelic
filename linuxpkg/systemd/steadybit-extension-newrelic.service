@@ -1,0 +1,18 @@
+[Unit]
+Description="steadybit extension newrelic"
+After=syslog.target
+
+[Service]
+Type=simple
+ExecStart=/opt/steadybit/extension-newrelic/extension-newrelic
+EnvironmentFile=/etc/steadybit/extension-newrelic
+User=steadybit
+Group=steadybit
+SuccessExitStatus=0 143
+Restart=on-failure
+RestartSec=5s
+StandardOutput=append:/var/log/steadybit-extension-newrelic.log
+StandardError=append:/var/log/steadybit-extension-newrelic.log
+
+[Install]
+WantedBy=multi-user.target

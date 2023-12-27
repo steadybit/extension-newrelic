@@ -1,0 +1,5 @@
+unixSocket: /run/steadybit/extension-newrelic.sock
+types:
+  - ACTION
+  - DISCOVERY
+  - EVENT

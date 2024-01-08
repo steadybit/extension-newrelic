@@ -25,7 +25,7 @@ The extension supports all environment variables provided by [steadybit/extensio
 ```sh
 docker run \
   --rm \
-  -p 8080 \
+  -p 8090 \
   --name steadybit-extension-newrelic \
   ghcr.io/steadybit/extension-newrelic:latest
 ```

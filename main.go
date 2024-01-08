@@ -17,6 +17,7 @@ import (
 	"github.com/steadybit/extension-kit/extlogging"
 	"github.com/steadybit/extension-kit/extruntime"
 	"github.com/steadybit/extension-newrelic/config"
+	"github.com/steadybit/extension-newrelic/extworkload"
 	_ "net/http/pprof" //allow pprof
 )
 
@@ -31,7 +32,7 @@ func main() {
 	exthealth.StartProbes(8091)
 
 	exthttp.RegisterHttpHandler("/", exthttp.GetterAsHandler(getExtensionList))
-	//discovery_kit_sdk.Register(extrobots.NewRobotDiscovery())
+	discovery_kit_sdk.Register(extworkload.NewWorkloadDiscovery())
 	//action_kit_sdk.RegisterAction(extrobots.NewLogAction())
 	//extevents.RegisterEventListenerHandlers()
 

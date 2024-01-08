@@ -61,7 +61,7 @@ spec:
                   name: {{ include "newrelic.secret.name" . }}
                   key: api-key
             - name: STEADYBIT_EXTENSION_ACCOUNT_ID
-              value: {{ .Values.newrelic.accountId }}
+              value: {{ .Values.newrelic.accountId | quote }}
             - name: STEADYBIT_EXTENSION_INSIGHTS_API_BASE_URL
               value: {{ .Values.newrelic.apiBaseUrl }}
             - name: STEADYBIT_EXTENSION_INSIGHTS_INSERT_KEY
@@ -83,7 +83,7 @@ spec:
             failureThreshold: {{ .Values.probes.liveness.failureThreshold }}
             httpGet:
               path: /health/liveness
-              port: 8081
+              port: 8091
           readinessProbe:
             initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
             periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
@@ -92,7 +92,7 @@ spec:
             failureThreshold: {{ .Values.probes.readiness.failureThreshold }}
             httpGet:
               path: /health/readiness
-              port: 8081
+              port: 8091
           securityContext:
             readOnlyRootFilesystem: true
             runAsNonRoot: true

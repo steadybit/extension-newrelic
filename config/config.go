@@ -48,7 +48,8 @@ func ValidateConfiguration() {
 	// You may optionally validate the configuration here.
 }
 
-const workloadQuery = `{actor {account(id: %s){workload {collections {guid name}}}}}`
+const workloadQuery = `{actor {account(id: %s){workload {collections {guid name permalink}}}}}`
+const workloadStatusQuery = `{actor {account(id: %s){ workload { collection(guid: \"%s\") {status {value}}}}}}`
 
 func (s *Specification) GetWorkloads(_ context.Context) ([]types.Workload, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
@@ -72,6 +73,38 @@ func (s *Specification) GetWorkloads(_ context.Context) ([]types.Workload, error
 			return nil, err
 		}
 		return result.Data.Actor.Account.Workload.Collections, err
+	} else {
+		log.Error().Err(err).Msgf("Empty response body")
+		return nil, errors.New("empty response body")
+	}
+}
+
+func (s *Specification) GetWorkloadStatus(ctx context.Context, workloadGuid string) (*string, error) {
+	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
+
+	responseBody, response, err := s.do(url, "POST", []byte(fmt.Sprintf("{\"query\": \"%s\"}", fmt.Sprintf(workloadStatusQuery, s.AccountId, workloadGuid))))
+	if err != nil {
+		log.Error().Err(err).Str("workloadGuid", workloadGuid).Msgf("Failed to get workload status from New Relic. Full response %+v", string(responseBody))
+		return nil, err
+	}
+
+	if response.StatusCode != 200 {
+		log.Error().Int("code", response.StatusCode).Err(err).Str("workloadGuid", workloadGuid).Msgf("Unexpected response %+v", string(responseBody))
+		return nil, errors.New("unexpected response code")
+	}
+
+	var result types.WorkloadSearchResponse
+	if responseBody != nil {
+		err = json.Unmarshal(responseBody, &result)
+		if err != nil {
+			log.Error().Err(err).Str("body", string(responseBody)).Msgf("Failed to parse body")
+			return nil, err
+		}
+		if result.Data.Actor.Account.Workload.Collection != nil && result.Data.Actor.Account.Workload.Collection.Status != nil {
+			return &result.Data.Actor.Account.Workload.Collection.Status.Value, err
+		}
+		log.Error().Err(err).Msgf("Unexpected response body %+v", string(responseBody))
+		return nil, errors.New("unexpected response body")
 	} else {
 		log.Error().Err(err).Msgf("Empty response body")
 		return nil, errors.New("empty response body")

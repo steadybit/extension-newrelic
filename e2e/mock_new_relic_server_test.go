@@ -3,6 +3,7 @@ package e2e
 import (
 	"fmt"
 	"github.com/rs/zerolog/log"
+	"io"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -21,9 +22,17 @@ func createMockNewRelicServer() *httptest.Server {
 		Config: &http.Server{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			log.Info().Str("path", r.URL.Path).Str("method", r.Method).Str("query", r.URL.RawQuery).Msg("Mock Server received Request")
 			Requests = append(Requests, fmt.Sprintf("%s-%s", r.Method, r.URL.Path))
-			if strings.HasPrefix(r.URL.Path, "/graphql") && r.Method == http.MethodPost {
+			requestBodyBytes, errRead := io.ReadAll(r.Body)
+			if errRead != nil {
+				panic(errRead)
+			}
+			requestBody := string(requestBodyBytes)
+			if strings.HasPrefix(r.URL.Path, "/graphql") && strings.Contains(requestBody, "guid name permalink") && r.Method == http.MethodPost {
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write(workloads())
+			} else if strings.HasPrefix(r.URL.Path, "/graphql") && strings.Contains(requestBody, "status {value}") && r.Method == http.MethodPost {
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write(workloadStatus())
 			} else {
 				w.WriteHeader(http.StatusBadRequest)
 			}
@@ -45,6 +54,24 @@ func workloads() []byte {
                             "name": "sandbox-demo"
                         }
                     ]
+                }
+            }
+        }
+    }
+}`)
+}
+
+func workloadStatus() []byte {
+	return []byte(`{
+    "data": {
+        "actor": {
+            "account": {
+                "workload": {
+                    "collection": {
+                        "status": {
+                            "value": "OPERATIONAL"
+                        }
+                    }
                 }
             }
         }

@@ -103,7 +103,9 @@ func toTarget(workload types.Workload) discovery_kit_api.Target {
 
 	attributes := make(map[string][]string)
 	attributes["steadybit.label"] = []string{label}
-	attributes["new-relic.workload.name"] = []string{workload.Name}
+	attributes["new-relic.workload.name"] = []string{label}
+	attributes["new-relic.workload.guid"] = []string{id}
+	attributes["new-relic.workload.permalink"] = []string{workload.Permalink}
 
 	return discovery_kit_api.Target{
 		Id:         id,

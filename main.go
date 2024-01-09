@@ -33,7 +33,7 @@ func main() {
 
 	exthttp.RegisterHttpHandler("/", exthttp.GetterAsHandler(getExtensionList))
 	discovery_kit_sdk.Register(extworkload.NewWorkloadDiscovery())
-	//action_kit_sdk.RegisterAction(extrobots.NewLogAction())
+	action_kit_sdk.RegisterAction(extworkload.NewWorkloadCheckAction())
 	//extevents.RegisterEventListenerHandlers()
 
 	action_kit_sdk.InstallSignalHandler()

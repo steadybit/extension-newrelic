@@ -1,8 +1,10 @@
 package types
 
 type Workload struct {
-	Guid string `json:"guid"`
-	Name string `json:"name"`
+	Guid      string          `json:"guid"`
+	Name      string          `json:"name"`
+	Permalink string          `json:"permalink"`
+	Status    *WorkloadStatus `json:"status"`
 }
 
 type WorkloadSearchResponse struct {
@@ -19,4 +21,8 @@ type WorkloadSearchResponseAccount struct {
 }
 type WorkloadSearchResponseWorkload struct {
 	Collections []Workload `json:"collections"`
+	Collection  *Workload  `json:"collection"`
+}
+type WorkloadStatus struct {
+	Value string `json:"value"`
 }

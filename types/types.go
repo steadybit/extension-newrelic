@@ -7,22 +7,26 @@ type Workload struct {
 	Status    *WorkloadStatus `json:"status"`
 }
 
-type WorkloadSearchResponse struct {
-	Data WorkloadSearchResponseData `json:"data"`
+type GraphQlResponse struct {
+	Data GraphQlResponseData `json:"data"`
 }
-type WorkloadSearchResponseData struct {
-	Actor WorkloadSearchResponseActor `json:"actor"`
+type GraphQlResponseData struct {
+	Actor GraphQlResponseActor `json:"actor"`
 }
-type WorkloadSearchResponseActor struct {
-	Account WorkloadSearchResponseAccount `json:"account"`
+type GraphQlResponseActor struct {
+	Account  GraphQlResponseAccount    `json:"account"`
+	Accounts []GraphQlResponseAccounts `json:"accounts"`
 }
-type WorkloadSearchResponseAccount struct {
-	Workload WorkloadSearchResponseWorkload `json:"workload"`
+type GraphQlResponseAccount struct {
+	Workload WorkloadResponse `json:"workload"`
 }
-type WorkloadSearchResponseWorkload struct {
+type WorkloadResponse struct {
 	Collections []Workload `json:"collections"`
 	Collection  *Workload  `json:"collection"`
 }
 type WorkloadStatus struct {
 	Value string `json:"value"`
+}
+type GraphQlResponseAccounts struct {
+	Id string `json:"id"`
 }

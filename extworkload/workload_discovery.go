@@ -5,6 +5,7 @@ package extworkload
 
 import (
 	"context"
+	"fmt"
 	"github.com/rs/zerolog/log"
 	"github.com/steadybit/discovery-kit/go/discovery_kit_api"
 	"github.com/steadybit/discovery-kit/go/discovery_kit_sdk"
@@ -78,37 +79,46 @@ func (d *workloadDiscovery) DiscoverTargets(ctx context.Context) ([]discovery_ki
 }
 
 type GetWorkloadsApi interface {
-	GetWorkloads(ctx context.Context) ([]types.Workload, error)
+	GetAccountIds(ctx context.Context) ([]string, error)
+	GetWorkloads(ctx context.Context, accountId string) ([]types.Workload, error)
 }
 
 func getAllWorkloads(ctx context.Context, api GetWorkloadsApi) []discovery_kit_api.Target {
-	result := make([]discovery_kit_api.Target, 0, 500)
+	result := make([]discovery_kit_api.Target, 0, 100)
 
-	workloads, err := api.GetWorkloads(ctx)
+	accounts, err := api.GetAccountIds(ctx)
 	if err != nil {
-		log.Err(err).Msgf("Failed to get workloads from New Relic.")
+		log.Err(err).Msgf("Failed to get accounts from New Relic.")
 		return result
 	}
 
-	for _, workload := range workloads {
-		result = append(result, toTarget(workload))
+	for _, accountId := range accounts {
+		workloads, err := api.GetWorkloads(ctx, accountId)
+		if err != nil {
+			log.Err(err).Str("accountId", accountId).Msgf("Failed to get workloads from New Relic.")
+			return result
+		}
+
+		for _, workload := range workloads {
+			result = append(result, toTarget(workload, accountId))
+		}
 	}
 
 	return result
 }
 
-func toTarget(workload types.Workload) discovery_kit_api.Target {
-	id := workload.Guid
-	label := workload.Name
+func toTarget(workload types.Workload, accountId string) discovery_kit_api.Target {
+	label := fmt.Sprintf("%s (%s)", workload.Name, accountId)
 
 	attributes := make(map[string][]string)
 	attributes["steadybit.label"] = []string{label}
-	attributes["new-relic.workload.name"] = []string{label}
-	attributes["new-relic.workload.guid"] = []string{id}
+	attributes["new-relic.workload.name"] = []string{workload.Name}
+	attributes["new-relic.workload.guid"] = []string{workload.Guid}
 	attributes["new-relic.workload.permalink"] = []string{workload.Permalink}
+	attributes["new-relic.workload.account"] = []string{accountId}
 
 	return discovery_kit_api.Target{
-		Id:         id,
+		Id:         workload.Guid,
 		Label:      label,
 		TargetType: WorkloadTargetId,
 		Attributes: attributes,

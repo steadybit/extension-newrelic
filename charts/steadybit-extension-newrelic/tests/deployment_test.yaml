@@ -81,7 +81,6 @@ tests:
     set:
       newrelic.apiBaseUrl: https://api.newrelic.com
       newrelic.apiKey: 1234567890abcdef1234567890abcdef12345678
-      newrelic.accountId: 41470
       newrelic.insightsApiBaseUrl: https://insights-api.newrelic.com
       newrelic.insightsInsertKey: abcdef1234567890abcdef1234567890abcdef12
     asserts:

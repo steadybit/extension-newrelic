@@ -32,7 +32,6 @@ func TestWithMinikube(t *testing.T) {
 				"--set", "logging.level=debug",
 				"--set", "newrelic.apiKey=api-key-123",
 				"--set", fmt.Sprintf("newrelic.apiBaseUrl=http://host.minikube.internal:%s", port),
-				"--set", "newrelic.accountId=41470",
 				"--set", fmt.Sprintf("newrelic.insightsApiBaseUrl=http://host.minikube.internal:%s", port),
 				"--set", "newrelic.insightsInsertKey=insert-key-123",
 			}
@@ -63,6 +62,7 @@ func testCheckWorkload(t *testing.T, m *e2e.Minikube, e *e2e.Extension) {
 		Attributes: map[string][]string{
 			"new-relic.workload.name":      {"Example Workload"},
 			"new-relic.workload.guid":      {"guid-11111"},
+			"new-relic.workload.account":   {"12345678"},
 			"new-relic.workload.permalink": {"https://one.newrelic.com/redirect/entity/xyz"},
 		},
 	}

@@ -7,8 +7,6 @@ newrelic:
   apiBaseUrl: ""
   # newrelic.apiKey -- The New Relic API Key
   apiKey: ""
-  # newrelic.accountId -- Your New Relic Account Id
-  accountId: ""
   # newrelic.insightsApiBaseUrl -- The New Relic Insights Base Url, like 'https://insights-api.newrelic.com'
   insightsApiBaseUrl: ""
   # newrelic.insightsInsertKey -- The New Relic Insights Insert Key

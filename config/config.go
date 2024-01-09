@@ -25,8 +25,6 @@ type Specification struct {
 	ApiBaseUrl string `json:"apiBaseUrl" split_words:"true" required:"true"`
 	// The New Relic API Key
 	ApiKey string `json:"apiKey" split_words:"true" required:"true"`
-	// Your New Relic Account Id
-	AccountId string `json:"accountId" split_words:"true" required:"true"`
 	// The New Relic Insights Base Url, like 'https://insights-api.newrelic.com'
 	InsightsApiBaseUrl string `json:"insightsApiBaseUrl" split_words:"true" required:"true"`
 	// The New Relic Insights Insert Key
@@ -48,13 +46,48 @@ func ValidateConfiguration() {
 	// You may optionally validate the configuration here.
 }
 
+const accountsQuery = `{actor {accounts {id}}}`
 const workloadQuery = `{actor {account(id: %s){workload {collections {guid name permalink}}}}}`
 const workloadStatusQuery = `{actor {account(id: %s){ workload { collection(guid: \"%s\") {status {value}}}}}}`
 
-func (s *Specification) GetWorkloads(_ context.Context) ([]types.Workload, error) {
+func (s *Specification) GetAccountIds(_ context.Context) ([]string, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
 
-	responseBody, response, err := s.do(url, "POST", []byte(fmt.Sprintf("{\"query\": \"%s\"}", fmt.Sprintf(workloadQuery, s.AccountId))))
+	responseBody, response, err := s.do(url, "POST", []byte(fmt.Sprintf("{\"query\": \"%s\"}", accountsQuery)))
+	if err != nil {
+		log.Error().Err(err).Msgf("Failed to get accounts from New Relic. Full response %+v", string(responseBody))
+		return nil, err
+	}
+
+	if response.StatusCode != 200 {
+		log.Error().Int("code", response.StatusCode).Err(err).Msgf("Unexpected response %+v", string(responseBody))
+		return nil, errors.New("unexpected response code")
+	}
+
+	var result types.GraphQlResponse
+	if responseBody != nil {
+		err = json.Unmarshal(responseBody, &result)
+		if err != nil {
+			log.Error().Err(err).Str("body", string(responseBody)).Msgf("Failed to parse body")
+			return nil, err
+		}
+
+		accounts := make([]string, 0, len(result.Data.Actor.Accounts))
+		for _, account := range result.Data.Actor.Accounts {
+			accounts = append(accounts, account.Id)
+		}
+
+		return accounts, err
+	} else {
+		log.Error().Err(err).Msgf("Empty response body")
+		return nil, errors.New("empty response body")
+	}
+}
+
+func (s *Specification) GetWorkloads(_ context.Context, accountId string) ([]types.Workload, error) {
+	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
+
+	responseBody, response, err := s.do(url, "POST", []byte(fmt.Sprintf("{\"query\": \"%s\"}", fmt.Sprintf(workloadQuery, accountId))))
 	if err != nil {
 		log.Error().Err(err).Msgf("Failed to get workloads from New Relic. Full response %+v", string(responseBody))
 		return nil, err
@@ -65,7 +98,7 @@ func (s *Specification) GetWorkloads(_ context.Context) ([]types.Workload, error
 		return nil, errors.New("unexpected response code")
 	}
 
-	var result types.WorkloadSearchResponse
+	var result types.GraphQlResponse
 	if responseBody != nil {
 		err = json.Unmarshal(responseBody, &result)
 		if err != nil {
@@ -79,10 +112,10 @@ func (s *Specification) GetWorkloads(_ context.Context) ([]types.Workload, error
 	}
 }
 
-func (s *Specification) GetWorkloadStatus(ctx context.Context, workloadGuid string) (*string, error) {
+func (s *Specification) GetWorkloadStatus(_ context.Context, workloadGuid string, accountId string) (*string, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
 
-	responseBody, response, err := s.do(url, "POST", []byte(fmt.Sprintf("{\"query\": \"%s\"}", fmt.Sprintf(workloadStatusQuery, s.AccountId, workloadGuid))))
+	responseBody, response, err := s.do(url, "POST", []byte(fmt.Sprintf("{\"query\": \"%s\"}", fmt.Sprintf(workloadStatusQuery, accountId, workloadGuid))))
 	if err != nil {
 		log.Error().Err(err).Str("workloadGuid", workloadGuid).Msgf("Failed to get workload status from New Relic. Full response %+v", string(responseBody))
 		return nil, err
@@ -93,7 +126,7 @@ func (s *Specification) GetWorkloadStatus(ctx context.Context, workloadGuid stri
 		return nil, errors.New("unexpected response code")
 	}
 
-	var result types.WorkloadSearchResponse
+	var result types.GraphQlResponse
 	if responseBody != nil {
 		err = json.Unmarshal(responseBody, &result)
 		if err != nil {

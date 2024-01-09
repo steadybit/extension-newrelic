@@ -27,7 +27,10 @@ func createMockNewRelicServer() *httptest.Server {
 				panic(errRead)
 			}
 			requestBody := string(requestBodyBytes)
-			if strings.HasPrefix(r.URL.Path, "/graphql") && strings.Contains(requestBody, "guid name permalink") && r.Method == http.MethodPost {
+			if strings.HasPrefix(r.URL.Path, "/graphql") && strings.Contains(requestBody, "actor {accounts {id}}") && r.Method == http.MethodPost {
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write(accounts())
+			} else if strings.HasPrefix(r.URL.Path, "/graphql") && strings.Contains(requestBody, "guid name permalink") && r.Method == http.MethodPost {
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write(workloads())
 			} else if strings.HasPrefix(r.URL.Path, "/graphql") && strings.Contains(requestBody, "status {value}") && r.Method == http.MethodPost {
@@ -42,6 +45,21 @@ func createMockNewRelicServer() *httptest.Server {
 	log.Info().Str("url", server.URL).Msg("Started Mock-Server")
 	return &server
 }
+
+func accounts() []byte {
+	return []byte(`{
+  "data": {
+    "actor": {
+      "accounts": [
+        {
+          "id": 12345678
+        }
+      ]
+    }
+  }
+}`)
+}
+
 func workloads() []byte {
 	return []byte(`{
     "data": {

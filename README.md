@@ -12,7 +12,6 @@ Learn about the capabilities of this extension in our [Reliability Hub](https://
 |---------------------------------------------|------------|----------------------------------------------------------------------------------------------------------------------------|----------|---------|
 | `STEADYBIT_EXTENSION_API_BASE_URL`          |            | The New Relic API Base Url, like `https://api.newrelic.com`                                                                | yes      |         |
 | `STEADYBIT_EXTENSION_API_KEY`               |            | The New Relic [API Key](https://docs.newrelic.com/docs/apis/intro-apis/new-relic-api-keys/), Type: USER                    | yes      |         |
-| `STEADYBIT_EXTENSION_ACCOUNT_ID`            |            | Your New Relic Accont ID                                                                                                   | yes      |         |
 | `STEADYBIT_EXTENSION_INSIGHTS_API_BASE_URL` |            | The New Relic Ingest API Base Url, like `https://insights-collector.newrelic.com`                                          | yes      |         |
 | `STEADYBIT_EXTENSION_INSIGHTS_INSERT_KEY`   |            | The New Relic [Ingest API Key](https://docs.newrelic.com/docs/apis/intro-apis/new-relic-api-keys/), Type: INGEST - LICENSE | yes      |         |
 

@@ -188,12 +188,14 @@ func (m *WorkloadCheckAction) Status(ctx context.Context, state *WorkloadCheckSt
 }
 
 type WorkloadStatusApi interface {
-	GetWorkloadStatus(ctx context.Context, workloadGuid string) (*string, error)
+	GetWorkloadStatus(ctx context.Context, workloadGuid string, accountId string) (*string, error)
 }
 
 func WorkloadCheckStatus(ctx context.Context, state *WorkloadCheckState, api WorkloadStatusApi) (*action_kit_api.StatusResult, error) {
 	now := time.Now()
-	status, err := api.GetWorkloadStatus(ctx, state.Target.Attributes["new-relic.workload.guid"][0])
+	guid := state.Target.Attributes["new-relic.workload.guid"][0]
+	accountId := state.Target.Attributes["new-relic.workload.account"][0]
+	status, err := api.GetWorkloadStatus(ctx, guid, accountId)
 	if err != nil {
 		return nil, extension_kit.ToError("Failed to get workload status from New Relic.", err)
 	}

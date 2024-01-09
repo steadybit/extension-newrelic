@@ -28,5 +28,5 @@ type WorkloadStatus struct {
 	Value string `json:"value"`
 }
 type GraphQlResponseAccounts struct {
-	Id string `json:"id"`
+	Id int64 `json:"id"`
 }

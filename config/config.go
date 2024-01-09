@@ -47,10 +47,10 @@ func ValidateConfiguration() {
 }
 
 const accountsQuery = `{actor {accounts {id}}}`
-const workloadQuery = `{actor {account(id: %s){workload {collections {guid name permalink}}}}}`
-const workloadStatusQuery = `{actor {account(id: %s){ workload { collection(guid: \"%s\") {status {value}}}}}}`
+const workloadQuery = `{actor {account(id: %d){workload {collections {guid name permalink}}}}}`
+const workloadStatusQuery = `{actor {account(id: %d){ workload { collection(guid: \"%s\") {status {value}}}}}}`
 
-func (s *Specification) GetAccountIds(_ context.Context) ([]string, error) {
+func (s *Specification) GetAccountIds(_ context.Context) ([]int64, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
 
 	responseBody, response, err := s.do(url, "POST", []byte(fmt.Sprintf("{\"query\": \"%s\"}", accountsQuery)))
@@ -72,7 +72,7 @@ func (s *Specification) GetAccountIds(_ context.Context) ([]string, error) {
 			return nil, err
 		}
 
-		accounts := make([]string, 0, len(result.Data.Actor.Accounts))
+		accounts := make([]int64, 0, len(result.Data.Actor.Accounts))
 		for _, account := range result.Data.Actor.Accounts {
 			accounts = append(accounts, account.Id)
 		}
@@ -84,7 +84,7 @@ func (s *Specification) GetAccountIds(_ context.Context) ([]string, error) {
 	}
 }
 
-func (s *Specification) GetWorkloads(_ context.Context, accountId string) ([]types.Workload, error) {
+func (s *Specification) GetWorkloads(_ context.Context, accountId int64) ([]types.Workload, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
 
 	responseBody, response, err := s.do(url, "POST", []byte(fmt.Sprintf("{\"query\": \"%s\"}", fmt.Sprintf(workloadQuery, accountId))))
@@ -112,7 +112,7 @@ func (s *Specification) GetWorkloads(_ context.Context, accountId string) ([]typ
 	}
 }
 
-func (s *Specification) GetWorkloadStatus(_ context.Context, workloadGuid string, accountId string) (*string, error) {
+func (s *Specification) GetWorkloadStatus(_ context.Context, workloadGuid string, accountId int64) (*string, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
 
 	responseBody, response, err := s.do(url, "POST", []byte(fmt.Sprintf("{\"query\": \"%s\"}", fmt.Sprintf(workloadStatusQuery, accountId, workloadGuid))))

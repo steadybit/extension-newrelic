@@ -79,8 +79,8 @@ func (d *workloadDiscovery) DiscoverTargets(ctx context.Context) ([]discovery_ki
 }
 
 type GetWorkloadsApi interface {
-	GetAccountIds(ctx context.Context) ([]string, error)
-	GetWorkloads(ctx context.Context, accountId string) ([]types.Workload, error)
+	GetAccountIds(ctx context.Context) ([]int64, error)
+	GetWorkloads(ctx context.Context, accountId int64) ([]types.Workload, error)
 }
 
 func getAllWorkloads(ctx context.Context, api GetWorkloadsApi) []discovery_kit_api.Target {
@@ -95,7 +95,7 @@ func getAllWorkloads(ctx context.Context, api GetWorkloadsApi) []discovery_kit_a
 	for _, accountId := range accounts {
 		workloads, err := api.GetWorkloads(ctx, accountId)
 		if err != nil {
-			log.Err(err).Str("accountId", accountId).Msgf("Failed to get workloads from New Relic.")
+			log.Err(err).Int64("accountId", accountId).Msgf("Failed to get workloads from New Relic.")
 			return result
 		}
 
@@ -107,15 +107,15 @@ func getAllWorkloads(ctx context.Context, api GetWorkloadsApi) []discovery_kit_a
 	return result
 }
 
-func toTarget(workload types.Workload, accountId string) discovery_kit_api.Target {
-	label := fmt.Sprintf("%s (%s)", workload.Name, accountId)
+func toTarget(workload types.Workload, accountId int64) discovery_kit_api.Target {
+	label := fmt.Sprintf("%s (%d)", workload.Name, accountId)
 
 	attributes := make(map[string][]string)
 	attributes["steadybit.label"] = []string{label}
 	attributes["new-relic.workload.name"] = []string{workload.Name}
 	attributes["new-relic.workload.guid"] = []string{workload.Guid}
 	attributes["new-relic.workload.permalink"] = []string{workload.Permalink}
-	attributes["new-relic.workload.account"] = []string{accountId}
+	attributes["new-relic.workload.account"] = []string{fmt.Sprintf("%d", accountId)}
 
 	return discovery_kit_api.Target{
 		Id:         workload.Guid,

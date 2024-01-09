@@ -9,6 +9,8 @@ import (
 	"github.com/steadybit/action-kit/go/action_kit_test/e2e"
 	"github.com/steadybit/discovery-kit/go/discovery_kit_test/validate"
 	"github.com/steadybit/extension-kit/extlogging"
+	"github.com/steadybit/extension-kit/extutil"
+	"github.com/steadybit/extension-newrelic/extaccount"
 	"github.com/steadybit/extension-newrelic/extworkload"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -46,6 +48,10 @@ func TestWithMinikube(t *testing.T) {
 		{
 			Name: "check workload",
 			Test: testCheckWorkload,
+		},
+		{
+			Name: "create muting rule",
+			Test: testCreateMutingRule,
 		},
 	})
 }
@@ -94,4 +100,32 @@ func testCheckWorkload(t *testing.T, m *e2e.Minikube, e *e2e.Extension) {
 		assert.Equal(t, "guid-11111", metric.Metric["id"])
 		assert.Equal(t, "Example Workload", metric.Metric["title"])
 	}
+}
+
+func testCreateMutingRule(t *testing.T, m *e2e.Minikube, e *e2e.Extension) {
+	defer func() { Requests = []string{} }()
+
+	target := &action_kit_api.Target{
+		Name: "12345678",
+		Attributes: map[string][]string{
+			"new-relic.account.id": {"12345678"},
+		},
+	}
+
+	config := struct {
+		Duration int `json:"duration"`
+	}{Duration: 1000}
+
+	executionContext := &action_kit_api.ExecutionContext{
+		ExecutionId:   extutil.Ptr(123),
+		ExperimentKey: extutil.Ptr("TST-1"),
+		ExperimentUri: extutil.Ptr("https://experiment-uri"),
+		ExecutionUri:  extutil.Ptr("https://execution-uri"),
+	}
+
+	action, err := e.RunAction(extaccount.CreateMutingRuleActionId, target, config, executionContext)
+	defer func() { _ = action.Cancel() }()
+	require.NoError(t, err)
+	err = action.Wait()
+	require.NoError(t, err)
 }

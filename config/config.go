@@ -15,6 +15,7 @@ import (
 	"github.com/steadybit/extension-newrelic/types"
 	"io"
 	"net/http"
+	"time"
 )
 
 // Specification is the configuration specification for the extension. Configuration values can be applied
@@ -47,8 +48,6 @@ func ValidateConfiguration() {
 }
 
 const accountsQuery = `{actor {accounts {id}}}`
-const workloadQuery = `{actor {account(id: %d){workload {collections {guid name permalink}}}}}`
-const workloadStatusQuery = `{actor {account(id: %d){ workload { collection(guid: \"%s\") {status {value}}}}}}`
 
 func (s *Specification) GetAccountIds(_ context.Context) ([]int64, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
@@ -84,6 +83,8 @@ func (s *Specification) GetAccountIds(_ context.Context) ([]int64, error) {
 	}
 }
 
+const workloadQuery = `{actor {account(id: %d){workload {collections {guid name permalink}}}}}`
+
 func (s *Specification) GetWorkloads(_ context.Context, accountId int64) ([]types.Workload, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
 
@@ -111,6 +112,8 @@ func (s *Specification) GetWorkloads(_ context.Context, accountId int64) ([]type
 		return nil, errors.New("empty response body")
 	}
 }
+
+const workloadStatusQuery = `{actor {account(id: %d){ workload { collection(guid: \"%s\") {status {value}}}}}}`
 
 func (s *Specification) GetWorkloadStatus(_ context.Context, workloadGuid string, accountId int64) (*string, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
@@ -142,6 +145,58 @@ func (s *Specification) GetWorkloadStatus(_ context.Context, workloadGuid string
 		log.Error().Err(err).Msgf("Empty response body")
 		return nil, errors.New("empty response body")
 	}
+}
+
+const mutingRuleCreate = `mutation{alertsMutingRuleCreate(accountId: %d rule: {condition: {conditions: {attribute: \"accountId\", operator: EQUALS, values: \"%d\"}, operator: AND}, name: \"%s\", schedule: {endTime: \"%s\", timeZone: \"UTC\"}, description: \"%s\", enabled: true}  ) {id}}`
+
+func (s *Specification) CreateMutingRule(_ context.Context, accountId int64, name string, description string, end time.Time) (*string, error) {
+	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
+	endString := end.UTC().Format("2006-01-02T15:04:05")
+	responseBody, response, err := s.do(url, "POST", []byte(fmt.Sprintf("{\"query\": \"%s\"}", fmt.Sprintf(mutingRuleCreate, accountId, accountId, name, endString, description))))
+	if err != nil {
+		log.Error().Err(err).Msgf("Failed to create muting rule in New Relic. Full response %+v", string(responseBody))
+		return nil, err
+	}
+
+	if response.StatusCode != 200 {
+		log.Error().Int("code", response.StatusCode).Err(err).Msgf("Unexpected response %+v", string(responseBody))
+		return nil, errors.New("unexpected response code")
+	}
+
+	var result types.GraphQlResponse
+	if responseBody != nil {
+		err = json.Unmarshal(responseBody, &result)
+		if err != nil {
+			log.Error().Err(err).Str("body", string(responseBody)).Msgf("Failed to parse body")
+			return nil, err
+		}
+		if result.Data != nil && result.Data.AlertsMutingRuleCreate != nil {
+			return &result.Data.AlertsMutingRuleCreate.Id, err
+		}
+		log.Error().Err(err).Msgf("Unexpected response body %+v", string(responseBody))
+		return nil, errors.New("unexpected response body")
+	} else {
+		log.Error().Err(err).Msgf("Empty response body")
+		return nil, errors.New("empty response body")
+	}
+}
+
+const mutingRuleDelete = `mutation {alertsMutingRuleDelete(id: %s, accountId: %d){id}}`
+
+func (s *Specification) DeleteMutingRule(_ context.Context, accountId int64, mutingRuleId string) error {
+	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
+	responseBody, response, err := s.do(url, "POST", []byte(fmt.Sprintf("{\"query\": \"%s\"}", fmt.Sprintf(mutingRuleDelete, mutingRuleId, accountId))))
+	if err != nil {
+		log.Error().Err(err).Msgf("Failed to delete muting rule in New Relic. Full response %+v", string(responseBody))
+		return err
+	}
+
+	if response.StatusCode != 200 {
+		log.Error().Int("code", response.StatusCode).Err(err).Msgf("Unexpected response %+v", string(responseBody))
+		return errors.New("unexpected response code")
+	}
+
+	return nil
 }
 
 func (s *Specification) do(url string, method string, body []byte) ([]byte, *http.Response, error) {

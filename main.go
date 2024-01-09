@@ -17,6 +17,7 @@ import (
 	"github.com/steadybit/extension-kit/extlogging"
 	"github.com/steadybit/extension-kit/extruntime"
 	"github.com/steadybit/extension-newrelic/config"
+	"github.com/steadybit/extension-newrelic/extaccount"
 	"github.com/steadybit/extension-newrelic/extworkload"
 	_ "net/http/pprof" //allow pprof
 )
@@ -33,7 +34,9 @@ func main() {
 
 	exthttp.RegisterHttpHandler("/", exthttp.GetterAsHandler(getExtensionList))
 	discovery_kit_sdk.Register(extworkload.NewWorkloadDiscovery())
+	discovery_kit_sdk.Register(extaccount.NewAccountDiscovery())
 	action_kit_sdk.RegisterAction(extworkload.NewWorkloadCheckAction())
+	action_kit_sdk.RegisterAction(extaccount.NewCreateMutingRuleAction())
 	//extevents.RegisterEventListenerHandlers()
 
 	action_kit_sdk.InstallSignalHandler()

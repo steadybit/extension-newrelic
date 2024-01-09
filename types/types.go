@@ -8,17 +8,21 @@ type Workload struct {
 }
 
 type GraphQlResponse struct {
-	Data GraphQlResponseData `json:"data"`
+	Data *GraphQlResponseData `json:"data"`
 }
 type GraphQlResponseData struct {
-	Actor GraphQlResponseActor `json:"actor"`
+	Actor                  *GraphQlResponseActor                  `json:"actor"`
+	AlertsMutingRuleCreate *GraphQlResponseAlertsMutingRuleCreate `json:"alertsMutingRuleCreate"`
+}
+type GraphQlResponseAlertsMutingRuleCreate struct {
+	Id string `json:"id"`
 }
 type GraphQlResponseActor struct {
-	Account  GraphQlResponseAccount    `json:"account"`
+	Account  *GraphQlResponseAccount   `json:"account"`
 	Accounts []GraphQlResponseAccounts `json:"accounts"`
 }
 type GraphQlResponseAccount struct {
-	Workload WorkloadResponse `json:"workload"`
+	Workload *WorkloadResponse `json:"workload"`
 }
 type WorkloadResponse struct {
 	Collections []Workload `json:"collections"`

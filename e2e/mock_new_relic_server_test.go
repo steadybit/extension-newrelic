@@ -36,6 +36,12 @@ func createMockNewRelicServer() *httptest.Server {
 			} else if strings.HasPrefix(r.URL.Path, "/graphql") && strings.Contains(requestBody, "status {value}") && r.Method == http.MethodPost {
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write(workloadStatus())
+			} else if strings.HasPrefix(r.URL.Path, "/graphql") && strings.Contains(requestBody, "alertsMutingRuleCreate") && r.Method == http.MethodPost {
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write(mutingRuleCreated())
+			} else if strings.HasPrefix(r.URL.Path, "/graphql") && strings.Contains(requestBody, "alertsMutingRuleDelete") && r.Method == http.MethodPost {
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write(mutingRuleDeleted())
 			} else {
 				w.WriteHeader(http.StatusBadRequest)
 			}
@@ -94,5 +100,24 @@ func workloadStatus() []byte {
             }
         }
     }
+}`)
+}
+
+func mutingRuleCreated() []byte {
+	return []byte(`{
+    "data": {
+        "alertsMutingRuleCreate": {
+            "id": "248760"
+        }
+    }
+}`)
+}
+func mutingRuleDeleted() []byte {
+	return []byte(`{
+  "data": {
+    "alertsMutingRuleDelete": {
+      "id": "248760"
+    }
+  }
 }`)
 }

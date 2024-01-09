@@ -44,7 +44,7 @@ func (d *workloadDiscovery) Describe() discovery_kit_api.DiscoveryDescription {
 func (d *workloadDiscovery) DescribeTarget() discovery_kit_api.TargetDescription {
 	return discovery_kit_api.TargetDescription{
 		Id:       WorkloadTargetId,
-		Label:    discovery_kit_api.PluralLabel{One: "New Relic workload", Other: "New Relic workloads"},
+		Label:    discovery_kit_api.PluralLabel{One: "New Relic Workload", Other: "New Relic Workloads"},
 		Category: extutil.Ptr("monitoring"),
 		Version:  extbuild.GetSemverVersionStringOrUnknown(),
 		Icon:     extutil.Ptr(workloadIcon),
@@ -67,8 +67,8 @@ func (d *workloadDiscovery) DescribeAttributes() []discovery_kit_api.AttributeDe
 		{
 			Attribute: "new-relic.workload.name",
 			Label: discovery_kit_api.PluralLabel{
-				One:   "New Relic workload name",
-				Other: "New Relic workload names",
+				One:   "New Relic Workload Name",
+				Other: "New Relic Workload Names",
 			},
 		},
 	}

@@ -10,8 +10,6 @@ import (
 	"strings"
 )
 
-var Requests []string
-
 func createMockNewRelicServer() *httptest.Server {
 	listener, err := net.Listen("tcp", "0.0.0.0:0")
 	if err != nil {
@@ -21,7 +19,6 @@ func createMockNewRelicServer() *httptest.Server {
 		Listener: listener,
 		Config: &http.Server{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			log.Info().Str("path", r.URL.Path).Str("method", r.Method).Str("query", r.URL.RawQuery).Msg("Mock Server received Request")
-			Requests = append(Requests, fmt.Sprintf("%s-%s", r.Method, r.URL.Path))
 			requestBodyBytes, errRead := io.ReadAll(r.Body)
 			if errRead != nil {
 				panic(errRead)

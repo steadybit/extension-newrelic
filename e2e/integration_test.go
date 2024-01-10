@@ -61,8 +61,6 @@ func validateDiscovery(t *testing.T, _ *e2e.Minikube, e *e2e.Extension) {
 }
 
 func testCheckWorkload(t *testing.T, m *e2e.Minikube, e *e2e.Extension) {
-	defer func() { Requests = []string{} }()
-
 	target := &action_kit_api.Target{
 		Name: "Example Workload",
 		Attributes: map[string][]string{
@@ -103,8 +101,6 @@ func testCheckWorkload(t *testing.T, m *e2e.Minikube, e *e2e.Extension) {
 }
 
 func testCreateMutingRule(t *testing.T, m *e2e.Minikube, e *e2e.Extension) {
-	defer func() { Requests = []string{} }()
-
 	target := &action_kit_api.Target{
 		Name: "12345678",
 		Attributes: map[string][]string{

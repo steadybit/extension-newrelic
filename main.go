@@ -18,6 +18,7 @@ import (
 	"github.com/steadybit/extension-kit/extruntime"
 	"github.com/steadybit/extension-newrelic/config"
 	"github.com/steadybit/extension-newrelic/extaccount"
+	"github.com/steadybit/extension-newrelic/extincident"
 	"github.com/steadybit/extension-newrelic/extworkload"
 	_ "net/http/pprof" //allow pprof
 )
@@ -37,6 +38,7 @@ func main() {
 	discovery_kit_sdk.Register(extaccount.NewAccountDiscovery())
 	action_kit_sdk.RegisterAction(extworkload.NewWorkloadCheckAction())
 	action_kit_sdk.RegisterAction(extaccount.NewCreateMutingRuleAction())
+	action_kit_sdk.RegisterAction(extincident.NewIncidentCheckAction())
 	//extevents.RegisterEventListenerHandlers()
 
 	action_kit_sdk.InstallSignalHandler()

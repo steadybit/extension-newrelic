@@ -11,6 +11,7 @@ import (
 	"github.com/steadybit/extension-kit/extlogging"
 	"github.com/steadybit/extension-kit/extutil"
 	"github.com/steadybit/extension-newrelic/extaccount"
+	"github.com/steadybit/extension-newrelic/extincident"
 	"github.com/steadybit/extension-newrelic/extworkload"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -48,6 +49,10 @@ func TestWithMinikube(t *testing.T) {
 		{
 			Name: "check workload",
 			Test: testCheckWorkload,
+		},
+		{
+			Name: "check incidents",
+			Test: testCheckIncident,
 		},
 		{
 			Name: "create muting rule",
@@ -98,6 +103,43 @@ func testCheckWorkload(t *testing.T, m *e2e.Minikube, e *e2e.Extension) {
 		assert.Equal(t, "guid-11111", metric.Metric["id"])
 		assert.Equal(t, "Example Workload", metric.Metric["title"])
 	}
+}
+
+func testCheckIncident(t *testing.T, m *e2e.Minikube, e *e2e.Extension) {
+	target := &action_kit_api.Target{
+		Name: "12345678",
+		Attributes: map[string][]string{
+			"new-relic.account.id": {"12345678"},
+		},
+	}
+	config := struct {
+		Duration               int           `json:"duration"`
+		IncidentPriorityFilter []string      `json:"incidentPriorityFilter"`
+		EntityTagFilter        []interface{} `json:"entityTagFilter"`
+		Condition              string        `json:"condition"`
+		ConditionCheckMode     string        `json:"conditionCheckMode"`
+	}{Duration: 1000, IncidentPriorityFilter: []string{"CRITICAL"}, EntityTagFilter: []interface{}{map[string]interface{}{"key": "my-tag", "value": "my-value"}}, ConditionCheckMode: "showOnly"}
+
+	executionContext := &action_kit_api.ExecutionContext{}
+
+	action, err := e.RunAction(extincident.IncidentCheckActionId, target, config, executionContext)
+	defer func() { _ = action.Cancel() }()
+	require.NoError(t, err)
+	err = action.Wait()
+	require.NoError(t, err)
+
+	assert.Eventually(t, func() bool {
+		metrics := action.Metrics()
+		if metrics == nil {
+			return false
+		}
+		return len(metrics) > 0
+	}, 5*time.Second, 500*time.Millisecond)
+	metrics := action.Metrics()
+
+	assert.Len(t, metrics, 1)
+	assert.Equal(t, "incident-id-1", metrics[0].Metric["id"])
+	assert.Equal(t, "[\"CPU % > 20.0 for at least 1 minutes on 'ip-10-40-85-195.eu-central-1.compute.internal'\"]", metrics[0].Metric["title"])
 }
 
 func testCreateMutingRule(t *testing.T, m *e2e.Minikube, e *e2e.Extension) {

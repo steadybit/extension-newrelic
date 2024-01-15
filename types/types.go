@@ -20,9 +20,11 @@ type GraphQlResponseAlertsMutingRuleCreate struct {
 type GraphQlResponseActor struct {
 	Account  *GraphQlResponseAccount   `json:"account"`
 	Accounts []GraphQlResponseAccounts `json:"accounts"`
+	Entities []GraphQlResponseEntities `json:"entities"`
 }
 type GraphQlResponseAccount struct {
 	Workload *WorkloadResponse `json:"workload"`
+	AiIssues *AiIssuesResponse `json:"aiIssues"`
 }
 type WorkloadResponse struct {
 	Collections []Workload `json:"collections"`
@@ -33,4 +35,29 @@ type WorkloadStatus struct {
 }
 type GraphQlResponseAccounts struct {
 	Id int64 `json:"id"`
+}
+
+type AiIssuesResponse struct {
+	Incidents *IncidentsResponse `json:"incidents"`
+}
+type IncidentsResponse struct {
+	Incidents []Incident `json:"incidents"`
+}
+
+type Incident struct {
+	IncidentId  string   `json:"incidentId"`
+	EntityGuids string   `json:"entityGuids"`
+	EntityNames string   `json:"entityNames"`
+	Priority    string   `json:"priority"`
+	Title       string   `json:"title"`
+	Description []string `json:"description"`
+}
+
+type GraphQlResponseEntities struct {
+	Tags []GraphQlResponseTags `json:"tags"`
+}
+
+type GraphQlResponseTags struct {
+	Key    string   `json:"key"`
+	Values []string `json:"values"`
 }

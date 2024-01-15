@@ -199,6 +199,82 @@ func (s *Specification) DeleteMutingRule(_ context.Context, accountId int64, mut
 	return nil
 }
 
+const entityTagsQuery = `{actor {entities(guids: "%s"){tags {key values}}}}`
+
+func (s *Specification) GetEntityTags(_ context.Context, guid string) (map[string][]string, error) {
+	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
+
+	responseBody, response, err := s.do(url, "POST", []byte(fmt.Sprintf("{\"query\": \"%s\"}", fmt.Sprintf(entityTagsQuery, guid))))
+	if err != nil {
+		log.Error().Err(err).Msgf("Failed to get entity tags from New Relic. Full response %+v", string(responseBody))
+		return nil, err
+	}
+
+	if response.StatusCode != 200 {
+		log.Error().Int("code", response.StatusCode).Err(err).Msgf("Unexpected response %+v", string(responseBody))
+		return nil, errors.New("unexpected response code")
+	}
+
+	var result types.GraphQlResponse
+	if responseBody != nil {
+		err = json.Unmarshal(responseBody, &result)
+		if err != nil {
+			log.Error().Err(err).Str("body", string(responseBody)).Msgf("Failed to parse body")
+			return nil, err
+		}
+
+		if result.Data.Actor.Entities != nil && len(result.Data.Actor.Entities) == 1 {
+			tags := make(map[string][]string)
+			for _, tag := range result.Data.Actor.Entities[0].Tags {
+				tags[tag.Key] = tag.Values
+			}
+			return tags, err
+		}
+		log.Error().Err(err).Msgf("Unexpected response body %+v", string(responseBody))
+		return nil, errors.New("unexpected response body")
+	} else {
+		log.Error().Err(err).Msgf("Empty response body")
+		return nil, errors.New("empty response body")
+	}
+}
+
+const incidentsQuery = `{actor {account(id: %d){aiIssues {incidents(filter: {priority: [%s], states: CREATED} timeWindow: {startTime: %d, endTime: %d}) {incidents {incidentId entityGuids entityNames title description priority}}}}}}`
+
+func (s *Specification) GetIncidents(_ context.Context, from time.Time, incidentPriorityFilter []string, accountId int64) ([]types.Incident, error) {
+	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
+
+	priorityFilter := ""
+	for i, priority := range incidentPriorityFilter {
+		if i > 0 {
+			priorityFilter += ","
+		}
+		priorityFilter += fmt.Sprintf("\"%s\"", priority)
+	}
+	responseBody, response, err := s.do(url, "POST", []byte(fmt.Sprintf("{\"query\": \"%s\"}", fmt.Sprintf(incidentsQuery, accountId, priorityFilter, from.UnixMilli(), time.Now().UnixMilli()))))
+	if err != nil {
+		log.Error().Err(err).Msgf("Failed to get incidents from New Relic. Full response %+v", string(responseBody))
+		return nil, err
+	}
+
+	if response.StatusCode != 200 {
+		log.Error().Int("code", response.StatusCode).Err(err).Msgf("Unexpected response %+v", string(responseBody))
+		return nil, errors.New("unexpected response code")
+	}
+
+	var result types.GraphQlResponse
+	if responseBody != nil {
+		err = json.Unmarshal(responseBody, &result)
+		if err != nil {
+			log.Error().Err(err).Str("body", string(responseBody)).Msgf("Failed to parse body")
+			return nil, err
+		}
+		return result.Data.Actor.Account.AiIssues.Incidents.Incidents, err
+	} else {
+		log.Error().Err(err).Msgf("Empty response body")
+		return nil, errors.New("empty response body")
+	}
+}
+
 func (s *Specification) do(url string, method string, body []byte) ([]byte, *http.Response, error) {
 	log.Debug().Str("url", url).Str("method", method).Msg("Requesting New Relic API")
 	if body != nil {

@@ -33,6 +33,15 @@ func createMockNewRelicServer() *httptest.Server {
 			} else if strings.HasPrefix(r.URL.Path, "/graphql") && strings.Contains(requestBody, "status {value}") && r.Method == http.MethodPost {
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write(workloadStatus())
+			} else if strings.HasPrefix(r.URL.Path, "/graphql") && strings.Contains(requestBody, "incidents") && r.Method == http.MethodPost {
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write(incidents())
+			} else if strings.HasPrefix(r.URL.Path, "/graphql") && strings.Contains(requestBody, "tags {key values}") && strings.Contains(requestBody, "entity-1") && r.Method == http.MethodPost {
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write(tagsMatching())
+			} else if strings.HasPrefix(r.URL.Path, "/graphql") && strings.Contains(requestBody, "tags {key values}") && strings.Contains(requestBody, "entity-2") && r.Method == http.MethodPost {
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write(tagsEmpty())
 			} else if strings.HasPrefix(r.URL.Path, "/graphql") && strings.Contains(requestBody, "alertsMutingRuleCreate") && r.Method == http.MethodPost {
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write(mutingRuleCreated())
@@ -79,6 +88,79 @@ func workloads() []byte {
             }
         }
     }
+}`)
+}
+
+func incidents() []byte {
+	return []byte(`{
+  "data": {
+    "actor": {
+      "account": {
+        "aiIssues": {
+          "incidents": {
+             "incidents": [
+                 {
+                   "description": [
+                     "Policy: 'CPU load'. Condition: 'CPU load'"
+                   ],
+                   "entityGuids": "entity-1",
+                   "entityNames": "ip-10-40-85-195.eu-central-1.compute.internal",
+                   "incidentId": "incident-id-1",
+                   "priority": "CRITICAL",
+                   "title": "[\"CPU % > 20.0 for at least 1 minutes on 'ip-10-40-85-195.eu-central-1.compute.internal'\"]"
+                 },
+                 {
+                   "description": [
+                     "Should be ignored - missing tags"
+                   ],
+                   "entityGuids": "entity-2",
+                   "entityNames": "ip-10-40-85-195.eu-central-1.compute.internal",
+                   "incidentId": "incident-id-2",
+                   "priority": "CRITICAL",
+                   "title": "[\"CPU % > 20.0 for at least 1 minutes on 'ip-10-40-85-195.eu-central-1.compute.internal'\"]"
+                 }
+             ]
+          }
+        }
+      }
+    }
+  }
+}`)
+}
+
+func tagsMatching() []byte {
+	return []byte(`{
+  "data": {
+    "actor": {
+      "entities": [
+        {
+          "tags": [
+            {
+              "key": "my-tag",
+              "values": [
+                "my-value"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}`)
+}
+
+func tagsEmpty() []byte {
+	return []byte(`{
+  "data": {
+    "actor": {
+      "entities": [
+        {
+          "tags": [
+          ]
+        }
+      ]
+    }
+  }
 }`)
 }
 

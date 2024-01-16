@@ -39,12 +39,12 @@ manifest should match snapshot using podAnnotations and Labels:
                     secretKeyRef:
                       key: api-key
                       name: steadybit-extension-newrelic
-                - name: STEADYBIT_EXTENSION_INSIGHTS_API_BASE_URL
+                - name: STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_BASE_URL
                   value: null
-                - name: STEADYBIT_EXTENSION_INSIGHTS_INSERT_KEY
+                - name: STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_KEY
                   valueFrom:
                     secretKeyRef:
-                      key: insights-insert-key
+                      key: insights-collector-api-key
                       name: steadybit-extension-newrelic
               image: ghcr.io/steadybit/extension-newrelic:latest
               imagePullPolicy: Always
@@ -129,12 +129,12 @@ manifest should match snapshot with TLS:
                     secretKeyRef:
                       key: api-key
                       name: steadybit-extension-newrelic
-                - name: STEADYBIT_EXTENSION_INSIGHTS_API_BASE_URL
+                - name: STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_BASE_URL
                   value: null
-                - name: STEADYBIT_EXTENSION_INSIGHTS_INSERT_KEY
+                - name: STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_KEY
                   valueFrom:
                     secretKeyRef:
-                      key: insights-insert-key
+                      key: insights-collector-api-key
                       name: steadybit-extension-newrelic
               image: ghcr.io/steadybit/extension-newrelic:latest
               imagePullPolicy: Always
@@ -224,12 +224,12 @@ manifest should match snapshot with extra env vars:
                     secretKeyRef:
                       key: api-key
                       name: steadybit-extension-newrelic
-                - name: STEADYBIT_EXTENSION_INSIGHTS_API_BASE_URL
+                - name: STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_BASE_URL
                   value: null
-                - name: STEADYBIT_EXTENSION_INSIGHTS_INSERT_KEY
+                - name: STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_KEY
                   valueFrom:
                     secretKeyRef:
-                      key: insights-insert-key
+                      key: insights-collector-api-key
                       name: steadybit-extension-newrelic
               envFrom:
                 - configMapRef: null
@@ -317,12 +317,12 @@ manifest should match snapshot with extra labels:
                     secretKeyRef:
                       key: api-key
                       name: steadybit-extension-newrelic
-                - name: STEADYBIT_EXTENSION_INSIGHTS_API_BASE_URL
+                - name: STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_BASE_URL
                   value: null
-                - name: STEADYBIT_EXTENSION_INSIGHTS_INSERT_KEY
+                - name: STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_KEY
                   valueFrom:
                     secretKeyRef:
-                      key: insights-insert-key
+                      key: insights-collector-api-key
                       name: steadybit-extension-newrelic
               image: ghcr.io/steadybit/extension-newrelic:latest
               imagePullPolicy: Always
@@ -409,12 +409,12 @@ manifest should match snapshot with mutual TLS:
                     secretKeyRef:
                       key: api-key
                       name: steadybit-extension-newrelic
-                - name: STEADYBIT_EXTENSION_INSIGHTS_API_BASE_URL
+                - name: STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_BASE_URL
                   value: null
-                - name: STEADYBIT_EXTENSION_INSIGHTS_INSERT_KEY
+                - name: STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_KEY
                   valueFrom:
                     secretKeyRef:
-                      key: insights-insert-key
+                      key: insights-collector-api-key
                       name: steadybit-extension-newrelic
               image: ghcr.io/steadybit/extension-newrelic:latest
               imagePullPolicy: Always
@@ -515,12 +515,12 @@ manifest should match snapshot with mutual TLS using containerPaths:
                     secretKeyRef:
                       key: api-key
                       name: steadybit-extension-newrelic
-                - name: STEADYBIT_EXTENSION_INSIGHTS_API_BASE_URL
+                - name: STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_BASE_URL
                   value: null
-                - name: STEADYBIT_EXTENSION_INSIGHTS_INSERT_KEY
+                - name: STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_KEY
                   valueFrom:
                     secretKeyRef:
-                      key: insights-insert-key
+                      key: insights-collector-api-key
                       name: steadybit-extension-newrelic
               image: ghcr.io/steadybit/extension-newrelic:latest
               imagePullPolicy: Always
@@ -601,12 +601,12 @@ manifest should match snapshot with numeric account id:
                     secretKeyRef:
                       key: api-key
                       name: steadybit-extension-newrelic
-                - name: STEADYBIT_EXTENSION_INSIGHTS_API_BASE_URL
-                  value: https://api.newrelic.com
-                - name: STEADYBIT_EXTENSION_INSIGHTS_INSERT_KEY
+                - name: STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_BASE_URL
+                  value: https://insights-api.newrelic.com
+                - name: STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_KEY
                   valueFrom:
                     secretKeyRef:
-                      key: insights-insert-key
+                      key: insights-collector-api-key
                       name: steadybit-extension-newrelic
               image: ghcr.io/steadybit/extension-newrelic:latest
               imagePullPolicy: Always
@@ -687,12 +687,12 @@ manifest should match snapshot with podSecurityContext:
                     secretKeyRef:
                       key: api-key
                       name: steadybit-extension-newrelic
-                - name: STEADYBIT_EXTENSION_INSIGHTS_API_BASE_URL
+                - name: STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_BASE_URL
                   value: null
-                - name: STEADYBIT_EXTENSION_INSIGHTS_INSERT_KEY
+                - name: STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_KEY
                   valueFrom:
                     secretKeyRef:
-                      key: insights-insert-key
+                      key: insights-collector-api-key
                       name: steadybit-extension-newrelic
               image: ghcr.io/steadybit/extension-newrelic:latest
               imagePullPolicy: Always
@@ -775,12 +775,12 @@ manifest should match snapshot with priority class:
                     secretKeyRef:
                       key: api-key
                       name: steadybit-extension-newrelic
-                - name: STEADYBIT_EXTENSION_INSIGHTS_API_BASE_URL
+                - name: STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_BASE_URL
                   value: null
-                - name: STEADYBIT_EXTENSION_INSIGHTS_INSERT_KEY
+                - name: STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_KEY
                   valueFrom:
                     secretKeyRef:
-                      key: insights-insert-key
+                      key: insights-collector-api-key
                       name: steadybit-extension-newrelic
               image: ghcr.io/steadybit/extension-newrelic:latest
               imagePullPolicy: Always
@@ -862,12 +862,12 @@ manifest should match snapshot without TLS:
                     secretKeyRef:
                       key: api-key
                       name: steadybit-extension-newrelic
-                - name: STEADYBIT_EXTENSION_INSIGHTS_API_BASE_URL
+                - name: STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_BASE_URL
                   value: null
-                - name: STEADYBIT_EXTENSION_INSIGHTS_INSERT_KEY
+                - name: STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_KEY
                   valueFrom:
                     secretKeyRef:
-                      key: insights-insert-key
+                      key: insights-collector-api-key
                       name: steadybit-extension-newrelic
               image: ghcr.io/steadybit/extension-newrelic:latest
               imagePullPolicy: Always

@@ -3,15 +3,15 @@
 # Declare variables to be passed into your templates.
 
 newrelic:
-  # newrelic.apiBaseUrl -- The API base url for the New Relic API, like `https://api.newrelic.com`
+  # newrelic.apiBaseUrl -- The API base url for the New Relic API, like 'https://api.newrelic.com' or 'https://api.eu.newrelic.com'
   apiBaseUrl: ""
   # newrelic.apiKey -- The New Relic API Key
   apiKey: ""
-  # newrelic.insightsApiBaseUrl -- The New Relic Insights Base Url, like 'https://insights-api.newrelic.com'
-  insightsApiBaseUrl: ""
-  # newrelic.insightsInsertKey -- The New Relic Insights Insert Key
-  insightsInsertKey: ""
-  # newrelic.existingSecret -- If defined, will skip secret creation and instead assume that the referenced secret contains the key `api-key` and `insights-insert-key`.
+  # newrelic.insightsCollectorApiBaseUrl -- The New Relic Insights Base Url, like 'https://insights-collector.newrelic.com' or 'https://insights-collector.eu01.nr-data.net'
+  insightsCollectorApiBaseUrl: ""
+  # newrelic.insightsCollectorApiKey -- The New Relic API Key of type "INGEST - LICENSE"
+  insightsCollectorApiKey: ""
+  # newrelic.existingSecret -- If defined, will skip secret creation and instead assume that the referenced secret contains the key `api-key` and `insights-collector-api-key`.
   existingSecret: null
 
 image:

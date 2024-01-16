@@ -60,13 +60,13 @@ spec:
                 secretKeyRef:
                   name: {{ include "newrelic.secret.name" . }}
                   key: api-key
-            - name: STEADYBIT_EXTENSION_INSIGHTS_API_BASE_URL
-              value: {{ .Values.newrelic.apiBaseUrl }}
-            - name: STEADYBIT_EXTENSION_INSIGHTS_INSERT_KEY
+            - name: STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_BASE_URL
+              value: {{ .Values.newrelic.insightsCollectorApiBaseUrl }}
+            - name: STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{ include "newrelic.secret.name" . }}
-                  key: insights-insert-key
+                  key: insights-collector-api-key
           {{- with .Values.extraEnvFrom }}
           envFrom:
             {{- toYaml . | nindent 12 }}

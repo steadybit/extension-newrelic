@@ -1,5 +1,34 @@
 package types
 
+type EventType string
+
+const (
+	EventTypeExperimentStarted EventType = "ExperimentStarted"
+	EventTypeExperimentEnded   EventType = "ExperimentEnded"
+	EventTypeAttackStarted     EventType = "AttackStarted"
+	EventTypeAttackEnded       EventType = "AttackEnded"
+)
+
+type EventIngest struct {
+	EventType         EventType `json:"eventType,omitempty"`
+	ExperimentKey     string    `json:"experimentKey,omitempty"`
+	ExperimentName    string    `json:"experimentName,omitempty"`
+	ExecutionId       string    `json:"executionId,omitempty"`
+	State             string    `json:"state,omitempty"`
+	TeamName          string    `json:"teamName,omitempty"`
+	TeamKey           string    `json:"teamKey,omitempty"`
+	EnvironmentName   string    `json:"environmentName,omitempty"`
+	PrincipalType     string    `json:"principalType,omitempty"`
+	PrincipalName     string    `json:"principalName,omitempty"`
+	PrincipalUsername string    `json:"principalUsername,omitempty"`
+	ActionId          string    `json:"actionId,omitempty"`
+	ActionName        string    `json:"actionName,omitempty"`
+	ActionCustomLabel string    `json:"actionCustomLabel,omitempty"`
+	Target            string    `json:"target,omitempty"`
+	TargetType        string    `json:"targetType,omitempty"`
+	TargetState       string    `json:"targetState,omitempty"`
+}
+
 type Workload struct {
 	Guid      string          `json:"guid"`
 	Name      string          `json:"name"`

@@ -139,7 +139,7 @@ func testCheckIncident(t *testing.T, m *e2e.Minikube, e *e2e.Extension) {
 
 	assert.Len(t, metrics, 1)
 	assert.Equal(t, "incident-id-1", metrics[0].Metric["id"])
-	assert.Equal(t, "[\"CPU % > 20.0 for at least 1 minutes on 'ip-10-40-85-195.eu-central-1.compute.internal'\"]", metrics[0].Metric["title"])
+	assert.Equal(t, "ip-10-40-85-195.eu-central-1.compute.internal", metrics[0].Metric["title"])
 }
 
 func testCreateMutingRule(t *testing.T, m *e2e.Minikube, e *e2e.Extension) {

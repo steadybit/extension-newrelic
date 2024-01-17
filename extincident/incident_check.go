@@ -322,13 +322,17 @@ func matchesEntityTagFilter(ctx context.Context, api IncidentsApi, incident type
 }
 
 func toMetric(incident types.Incident, now time.Time) action_kit_api.Metric {
+	title := incident.EntityNames
+	if len(title) == 0 {
+		title = incident.Title
+	}
 	return action_kit_api.Metric{
 		Name: extutil.Ptr("new_relic_incidents"),
 		Metric: map[string]string{
 			"id":      incident.IncidentId,
-			"title":   incident.Title,
+			"title":   title,
 			"state":   "danger",
-			"tooltip": fmt.Sprintf("%s\n%s\n%s", incident.Priority, incident.Description[0], incident.EntityNames),
+			"tooltip": fmt.Sprintf("Priority: %s\nTitle: %s\nDescription: %s\nEntity: %s", incident.Priority, incident.Title, incident.Description[0], incident.EntityNames),
 		},
 		Timestamp: now,
 		Value:     0,

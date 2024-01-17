@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/rs/zerolog/log"
+	"github.com/steadybit/extension-kit/extutil"
 	"github.com/steadybit/extension-newrelic/types"
 	"io"
 	"net/http"
@@ -139,8 +140,10 @@ func (s *Specification) GetWorkloadStatus(_ context.Context, workloadGuid string
 		if result.Data.Actor.Account.Workload.Collection != nil && result.Data.Actor.Account.Workload.Collection.Status != nil {
 			return &result.Data.Actor.Account.Workload.Collection.Status.Value, err
 		}
-		log.Error().Err(err).Msgf("Unexpected response body %+v", string(responseBody))
-		return nil, errors.New("unexpected response body")
+		//Workaround - New Relic has regular timeouts
+		//{"data":{"actor":{"account":{"workload":{"collection":null}}}},"errors":[{"extensions":{"errorClass":"TIMEOUT"},"locations":[{"column":42,"line":1}],"message":"Resolution of this field timed out","path":["actor","account","workload","collection"]}]}
+		log.Warn().Err(err).Str("body", string(responseBody)).Msgf("Unexpected response body, return status UNKNOWN")
+		return extutil.Ptr("UNKNOWN"), nil
 	} else {
 		log.Error().Err(err).Msgf("Empty response body")
 		return nil, errors.New("empty response body")

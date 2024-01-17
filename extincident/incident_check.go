@@ -28,7 +28,6 @@ var (
 )
 
 type IncidentCheckState struct {
-	Start                  time.Time
 	End                    time.Time
 	IncidentPriorityFilter []string
 	EntityTagFilter        map[string]string
@@ -188,7 +187,6 @@ func (m *IncidentCheckAction) Describe() action_kit_api.ActionDescription {
 
 func (m *IncidentCheckAction) Prepare(_ context.Context, state *IncidentCheckState, request action_kit_api.PrepareActionRequestBody) (*action_kit_api.PrepareResult, error) {
 	duration := request.Config["duration"].(float64)
-	state.Start = time.Now()
 	state.End = time.Now().Add(time.Millisecond * time.Duration(duration))
 	state.IncidentPriorityFilter = extutil.ToStringArray(request.Config["incidentPriorityFilter"])
 	state.AccountId = extutil.ToInt64(request.Target.Attributes["new-relic.account.id"][0])
@@ -231,13 +229,13 @@ func (m *IncidentCheckAction) Status(ctx context.Context, state *IncidentCheckSt
 }
 
 type IncidentsApi interface {
-	GetIncidents(ctx context.Context, from time.Time, incidentPriorityFilter []string, accountId int64) ([]types.Incident, error)
+	GetIncidents(ctx context.Context, incidentPriorityFilter []string, accountId int64) ([]types.Incident, error)
 	GetEntityTags(ctx context.Context, guid string) (map[string][]string, error)
 }
 
 func IncidentCheckStatus(ctx context.Context, state *IncidentCheckState, api IncidentsApi) (*action_kit_api.StatusResult, error) {
 	now := time.Now()
-	incidents, err := api.GetIncidents(ctx, state.Start, state.IncidentPriorityFilter, state.AccountId)
+	incidents, err := api.GetIncidents(ctx, state.IncidentPriorityFilter, state.AccountId)
 	if err != nil {
 		return nil, extension_kit.ToError("Failed to get incidents from New Relic.", err)
 	}

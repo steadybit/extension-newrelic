@@ -71,6 +71,9 @@ func (s *Specification) GetAccountIds(_ context.Context) ([]int64, error) {
 			log.Error().Err(err).Str("body", string(responseBody)).Msgf("Failed to parse body")
 			return nil, err
 		}
+		if result.Errors != nil && len(*result.Errors) > 0 {
+			log.Warn().Msgf("API returned errors %+v", result.Errors)
+		}
 
 		accounts := make([]int64, 0, len(result.Data.Actor.Accounts))
 		for _, account := range result.Data.Actor.Accounts {
@@ -107,6 +110,9 @@ func (s *Specification) GetWorkloads(_ context.Context, accountId int64) ([]type
 			log.Error().Err(err).Str("body", string(responseBody)).Msgf("Failed to parse body")
 			return nil, err
 		}
+		if result.Errors != nil && len(*result.Errors) > 0 {
+			log.Warn().Msgf("API returned errors %+v", result.Errors)
+		}
 		return result.Data.Actor.Account.Workload.Collections, err
 	} else {
 		log.Error().Err(err).Msgf("Empty response body")
@@ -136,6 +142,9 @@ func (s *Specification) GetWorkloadStatus(_ context.Context, workloadGuid string
 		if err != nil {
 			log.Error().Err(err).Str("body", string(responseBody)).Msgf("Failed to parse body")
 			return nil, err
+		}
+		if result.Errors != nil && len(*result.Errors) > 0 {
+			log.Warn().Msgf("API returned errors %+v", result.Errors)
 		}
 		if result.Data.Actor.Account.Workload.Collection != nil && result.Data.Actor.Account.Workload.Collection.Status != nil {
 			return &result.Data.Actor.Account.Workload.Collection.Status.Value, err
@@ -225,6 +234,9 @@ func (s *Specification) GetEntityTags(_ context.Context, guid string) (map[strin
 			log.Error().Err(err).Str("body", string(responseBody)).Msgf("Failed to parse body")
 			return nil, err
 		}
+		if result.Errors != nil && len(*result.Errors) > 0 {
+			log.Warn().Msgf("API returned errors %+v", result.Errors)
+		}
 
 		if result.Data.Actor.Entities != nil && len(result.Data.Actor.Entities) == 1 {
 			tags := make(map[string][]string)
@@ -241,7 +253,7 @@ func (s *Specification) GetEntityTags(_ context.Context, guid string) (map[strin
 	}
 }
 
-const incidentsQuery = `{actor {account(id: %d){aiIssues {incidents(filter: {priority: [%s], states: CREATED} {incidents {incidentId entityGuids entityNames title description priority}}}}}}`
+const incidentsQuery = `{actor {account(id: %d){aiIssues {incidents(filter: {priority: [%s], states: CREATED}) {incidents {incidentId entityGuids entityNames title description priority}}}}}}`
 
 func (s *Specification) GetIncidents(_ context.Context, incidentPriorityFilter []string, accountId int64) ([]types.Incident, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
@@ -270,6 +282,9 @@ func (s *Specification) GetIncidents(_ context.Context, incidentPriorityFilter [
 		if err != nil {
 			log.Error().Err(err).Str("body", string(responseBody)).Msgf("Failed to parse body")
 			return nil, err
+		}
+		if result.Errors != nil && len(*result.Errors) > 0 {
+			log.Warn().Msgf("API returned errors %+v", result.Errors)
 		}
 		if result.Data != nil && result.Data.Actor.Account != nil && result.Data.Actor.Account.AiIssues != nil && result.Data.Actor.Account.AiIssues.Incidents != nil {
 			return result.Data.Actor.Account.AiIssues.Incidents.Incidents, err

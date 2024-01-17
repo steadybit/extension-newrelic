@@ -37,7 +37,8 @@ type Workload struct {
 }
 
 type GraphQlResponse struct {
-	Data *GraphQlResponseData `json:"data"`
+	Data   *GraphQlResponseData    `json:"data"`
+	Errors *[]GraphQlResponseError `json:"errors"`
 }
 type GraphQlResponseData struct {
 	Actor                  *GraphQlResponseActor                  `json:"actor"`
@@ -89,4 +90,8 @@ type GraphQlResponseEntities struct {
 type GraphQlResponseTags struct {
 	Key    string   `json:"key"`
 	Values []string `json:"values"`
+}
+
+type GraphQlResponseError struct {
+	Message string `json:"message"`
 }

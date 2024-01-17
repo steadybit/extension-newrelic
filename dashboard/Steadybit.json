@@ -1,0 +1,103 @@
+{
+	"name": "steadybit",
+	"description": null,
+	"permissions": "PUBLIC_READ_WRITE",
+	"pages": [
+		{
+			"name": "steadybit",
+			"description": null,
+			"widgets": [
+				{
+					"title": "",
+					"layout": {
+						"column": 1,
+						"row": 1,
+						"width": 4,
+						"height": 2
+					},
+					"linkedEntityGuids": null,
+					"visualization": {
+						"id": "viz.markdown"
+					},
+					"rawConfiguration": {
+						"text": "![Steadybit logo](https://downloads.steadybit.com/logo.png)"
+					}
+				},
+				{
+					"title": "",
+					"layout": {
+						"column": 1,
+						"row": 3,
+						"width": 4,
+						"height": 3
+					},
+					"linkedEntityGuids": null,
+					"visualization": {
+						"id": "viz.pie"
+					},
+					"rawConfiguration": {
+						"colors": {
+							"seriesOverrides": [
+								{
+									"color": "#00e61b",
+									"seriesName": "completed"
+								},
+								{
+									"color": "#afa7a8",
+									"seriesName": "canceled"
+								}
+							]
+						},
+						"facet": {
+							"showOtherSeries": true
+						},
+						"legend": {
+							"enabled": true
+						},
+						"nrqlQueries": [
+							{
+								"accountIds": [
+									2847806
+								],
+								"query": "SELECT count(state) FROM ExperimentEnded FACET state"
+							}
+						],
+						"platformOptions": {
+							"ignoreTimeRange": false
+						}
+					}
+				},
+				{
+					"title": "Experiment Runs",
+					"layout": {
+						"column": 1,
+						"row": 6,
+						"width": 4,
+						"height": 3
+					},
+					"linkedEntityGuids": null,
+					"visualization": {
+						"id": "viz.table"
+					},
+					"rawConfiguration": {
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountIds": [
+									2847806
+								],
+								"query": "SELECT teamName, environmentName, experimentKey, executionId, state FROM ExperimentEnded order by timestamp ASC"
+							}
+						],
+						"platformOptions": {
+							"ignoreTimeRange": false
+						}
+					}
+				}
+			]
+		}
+	],
+	"variables": []
+}

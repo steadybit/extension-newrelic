@@ -102,7 +102,7 @@ func (m *WorkloadCheckAction) Describe() action_kit_api.ActionDescription {
 						Value: "UNKNOWN",
 					},
 				}),
-				DefaultValue: extutil.Ptr("[\"OPERATIONAL\",\"DEGRADED\",\"DEGRADED\",\"CRITICAL\",\"UNKNOWN\"]"),
+				DefaultValue: extutil.Ptr("[\"OPERATIONAL\",\"DEGRADED\",\"DISRUPTED\",\"CRITICAL\",\"UNKNOWN\"]"),
 			},
 			{
 				Name:         "conditionCheckMode",

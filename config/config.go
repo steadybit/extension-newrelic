@@ -211,7 +211,7 @@ func (s *Specification) DeleteMutingRule(_ context.Context, accountId int64, mut
 	return nil
 }
 
-const entityTagsQuery = `{actor {entities(guids: "%s"){tags {key values}}}}`
+const entityTagsQuery = `{actor {entities(guids: \"%s\"){tags {key values}}}}`
 
 func (s *Specification) GetEntityTags(_ context.Context, guid string) (map[string][]string, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)

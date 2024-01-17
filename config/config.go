@@ -238,9 +238,9 @@ func (s *Specification) GetEntityTags(_ context.Context, guid string) (map[strin
 	}
 }
 
-const incidentsQuery = `{actor {account(id: %d){aiIssues {incidents(filter: {priority: [%s], states: CREATED} timeWindow: {startTime: %d, endTime: %d}) {incidents {incidentId entityGuids entityNames title description priority}}}}}}`
+const incidentsQuery = `{actor {account(id: %d){aiIssues {incidents(filter: {priority: [%s], states: CREATED} {incidents {incidentId entityGuids entityNames title description priority}}}}}}`
 
-func (s *Specification) GetIncidents(_ context.Context, from time.Time, incidentPriorityFilter []string, accountId int64) ([]types.Incident, error) {
+func (s *Specification) GetIncidents(_ context.Context, incidentPriorityFilter []string, accountId int64) ([]types.Incident, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
 
 	priorityFilter := ""
@@ -250,7 +250,7 @@ func (s *Specification) GetIncidents(_ context.Context, from time.Time, incident
 		}
 		priorityFilter += fmt.Sprintf("\\\"%s\\\"", priority)
 	}
-	responseBody, response, err := s.do(url, "POST", []byte(fmt.Sprintf("{\"query\": \"%s\"}", fmt.Sprintf(incidentsQuery, accountId, priorityFilter, from.UnixMilli(), time.Now().UnixMilli()))), s.ApiKey)
+	responseBody, response, err := s.do(url, "POST", []byte(fmt.Sprintf("{\"query\": \"%s\"}", fmt.Sprintf(incidentsQuery, accountId, priorityFilter))), s.ApiKey)
 	if err != nil {
 		log.Error().Err(err).Msgf("Failed to get incidents from New Relic. Full response %+v", string(responseBody))
 		return nil, err

@@ -259,7 +259,7 @@ func getState(status *string) string {
 	} else if *status == "OPERATIONAL" {
 		return "success"
 	} else if *status == "DISRUPTED" || *status == "CRITICAL" {
-		return "error"
+		return "danger"
 	}
 	return "info" //UNKNOWN,DEGRADED
 }

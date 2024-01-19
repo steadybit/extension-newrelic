@@ -26,12 +26,12 @@ var (
 )
 
 type WorkloadCheckState struct {
-	Start                    time.Time
-	End                      time.Time
-	Target                   action_kit_api.Target
-	ExpectedStates           []string
-	ConditionCheckMode       string
-	ObservedUnexpectedStates map[string]bool
+	Start              time.Time
+	End                time.Time
+	Target             action_kit_api.Target
+	ExpectedStates     []string
+	ConditionCheckMode string
+	ObservedStates     map[string]bool
 }
 
 func NewWorkloadCheckAction() action_kit_sdk.Action[WorkloadCheckState] {
@@ -162,7 +162,7 @@ func (m *WorkloadCheckAction) Prepare(_ context.Context, state *WorkloadCheckSta
 	state.End = time.Now().Add(time.Millisecond * time.Duration(duration))
 	state.Target = *request.Target
 	state.ExpectedStates = extutil.ToStringArray(request.Config["expectedStates"])
-	state.ObservedUnexpectedStates = make(map[string]bool)
+	state.ObservedStates = make(map[string]bool)
 	if request.Config["conditionCheckMode"] != nil {
 		state.ConditionCheckMode = fmt.Sprintf("%v", request.Config["conditionCheckMode"])
 	}
@@ -210,14 +210,21 @@ func WorkloadCheckStatus(ctx context.Context, state *WorkloadCheckState, api Wor
 			})
 		}
 	} else if state.ConditionCheckMode == conditionCheckModeAtLeastOnce {
-		if !slices.Contains(state.ExpectedStates, *status) {
-			state.ObservedUnexpectedStates[*status] = true
-		}
-		if completed && len(state.ObservedUnexpectedStates) > 0 {
-			checkError = extutil.Ptr(action_kit_api.ActionKitError{
-				Title:  fmt.Sprintf("Unexpected status %s", keysToString(state.ObservedUnexpectedStates)),
-				Status: extutil.Ptr(action_kit_api.Failed),
-			})
+		state.ObservedStates[*status] = true
+		if completed {
+			checkSuccess := false
+			for _, expectedState := range state.ExpectedStates {
+				if state.ObservedStates[expectedState] {
+					checkSuccess = true
+					break
+				}
+			}
+			if !checkSuccess {
+				checkError = extutil.Ptr(action_kit_api.ActionKitError{
+					Title:  fmt.Sprintf("Expected state missing. Expected: %s, Observed: %s", strings.Join(state.ExpectedStates, ", "), keysToString(state.ObservedStates)),
+					Status: extutil.Ptr(action_kit_api.Failed),
+				})
+			}
 		}
 	}
 

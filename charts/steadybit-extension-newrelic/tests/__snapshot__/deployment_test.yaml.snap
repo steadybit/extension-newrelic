@@ -46,8 +46,8 @@ manifest should match snapshot using podAnnotations and Labels:
                     secretKeyRef:
                       key: insights-collector-api-key
                       name: steadybit-extension-newrelic
-              image: ghcr.io/steadybit/extension-newrelic:latest
-              imagePullPolicy: Always
+              image: ghcr.io/steadybit/extension-newrelic:v0.0.0
+              imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 5
                 httpGet:
@@ -136,8 +136,8 @@ manifest should match snapshot with TLS:
                     secretKeyRef:
                       key: insights-collector-api-key
                       name: steadybit-extension-newrelic
-              image: ghcr.io/steadybit/extension-newrelic:latest
-              imagePullPolicy: Always
+              image: ghcr.io/steadybit/extension-newrelic:v0.0.0
+              imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 5
                 httpGet:
@@ -236,8 +236,8 @@ manifest should match snapshot with extra env vars:
                   name: env-configmap
                 - name: env-secrets
                   secretRef: null
-              image: ghcr.io/steadybit/extension-newrelic:latest
-              imagePullPolicy: Always
+              image: ghcr.io/steadybit/extension-newrelic:v0.0.0
+              imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 5
                 httpGet:
@@ -324,8 +324,8 @@ manifest should match snapshot with extra labels:
                     secretKeyRef:
                       key: insights-collector-api-key
                       name: steadybit-extension-newrelic
-              image: ghcr.io/steadybit/extension-newrelic:latest
-              imagePullPolicy: Always
+              image: ghcr.io/steadybit/extension-newrelic:v0.0.0
+              imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 5
                 httpGet:
@@ -416,8 +416,8 @@ manifest should match snapshot with mutual TLS:
                     secretKeyRef:
                       key: insights-collector-api-key
                       name: steadybit-extension-newrelic
-              image: ghcr.io/steadybit/extension-newrelic:latest
-              imagePullPolicy: Always
+              image: ghcr.io/steadybit/extension-newrelic:v0.0.0
+              imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 5
                 httpGet:
@@ -522,8 +522,8 @@ manifest should match snapshot with mutual TLS using containerPaths:
                     secretKeyRef:
                       key: insights-collector-api-key
                       name: steadybit-extension-newrelic
-              image: ghcr.io/steadybit/extension-newrelic:latest
-              imagePullPolicy: Always
+              image: ghcr.io/steadybit/extension-newrelic:v0.0.0
+              imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 5
                 httpGet:
@@ -608,8 +608,8 @@ manifest should match snapshot with numeric account id:
                     secretKeyRef:
                       key: insights-collector-api-key
                       name: steadybit-extension-newrelic
-              image: ghcr.io/steadybit/extension-newrelic:latest
-              imagePullPolicy: Always
+              image: ghcr.io/steadybit/extension-newrelic:v0.0.0
+              imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 5
                 httpGet:
@@ -694,8 +694,8 @@ manifest should match snapshot with podSecurityContext:
                     secretKeyRef:
                       key: insights-collector-api-key
                       name: steadybit-extension-newrelic
-              image: ghcr.io/steadybit/extension-newrelic:latest
-              imagePullPolicy: Always
+              image: ghcr.io/steadybit/extension-newrelic:v0.0.0
+              imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 5
                 httpGet:
@@ -782,8 +782,8 @@ manifest should match snapshot with priority class:
                     secretKeyRef:
                       key: insights-collector-api-key
                       name: steadybit-extension-newrelic
-              image: ghcr.io/steadybit/extension-newrelic:latest
-              imagePullPolicy: Always
+              image: ghcr.io/steadybit/extension-newrelic:v0.0.0
+              imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 5
                 httpGet:
@@ -869,8 +869,8 @@ manifest should match snapshot without TLS:
                     secretKeyRef:
                       key: insights-collector-api-key
                       name: steadybit-extension-newrelic
-              image: ghcr.io/steadybit/extension-newrelic:latest
-              imagePullPolicy: Always
+              image: ghcr.io/steadybit/extension-newrelic:v0.0.0
+              imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 5
                 httpGet:

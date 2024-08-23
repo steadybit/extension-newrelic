@@ -238,7 +238,7 @@ func (s *Specification) GetEntityTags(_ context.Context, guid string) (map[strin
 			log.Warn().Msgf("API returned errors %+v", result.Errors)
 		}
 
-		if result.Data.Actor.Entities != nil && len(result.Data.Actor.Entities) == 1 {
+		if len(result.Data.Actor.Entities) == 1 {
 			tags := make(map[string][]string)
 			for _, tag := range result.Data.Actor.Entities[0].Tags {
 				tags[tag.Key] = tag.Values

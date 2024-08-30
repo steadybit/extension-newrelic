@@ -33,8 +33,7 @@ func NewWorkloadDiscovery() discovery_kit_sdk.TargetDiscovery {
 }
 func (d *workloadDiscovery) Describe() discovery_kit_api.DiscoveryDescription {
 	return discovery_kit_api.DiscoveryDescription{
-		Id:         WorkloadTargetId,
-		RestrictTo: extutil.Ptr(discovery_kit_api.LEADER),
+		Id: WorkloadTargetId,
 		Discover: discovery_kit_api.DescribingEndpointReferenceWithCallInterval{
 			CallInterval: extutil.Ptr("1m"),
 		},

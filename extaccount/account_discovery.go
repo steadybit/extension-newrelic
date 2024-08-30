@@ -32,8 +32,7 @@ func NewAccountDiscovery() discovery_kit_sdk.TargetDiscovery {
 }
 func (d *accountDiscovery) Describe() discovery_kit_api.DiscoveryDescription {
 	return discovery_kit_api.DiscoveryDescription{
-		Id:         AccountTargetId,
-		RestrictTo: extutil.Ptr(discovery_kit_api.LEADER),
+		Id: AccountTargetId,
 		Discover: discovery_kit_api.DescribingEndpointReferenceWithCallInterval{
 			CallInterval: extutil.Ptr("10m"),
 		},

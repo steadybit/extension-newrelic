@@ -17,23 +17,38 @@ Learn about the capabilities of this extension in our [Reliability Hub](https://
 
 The extension supports all environment variables provided by [steadybit/extension-kit](https://github.com/steadybit/extension-kit#environment-variables).
 
-When installed as linux package this configuration is in`/etc/steadybit/extension-newrelic`.
-
 ## Installation
 
-### Using Docker
+### Kubernetes
 
-```sh
-docker run \
-  --rm \
-  -p 8090 \
-  --name steadybit-extension-newrelic \
-  ghcr.io/steadybit/extension-newrelic:latest
+Detailed information about agent and extension installation in kubernetes can also be found in
+our [documentation](https://docs.steadybit.com/install-and-configure/install-agent/install-on-kubernetes).
+
+#### Recommended (via agent helm chart)
+
+All extensions provide a helm chart that is also integrated in the
+[helm-chart](https://github.com/steadybit/helm-charts/tree/main/charts/steadybit-agent) of the agent.
+
+You must provide additional values to activate this extension.
+
+```
+--set extension-newrelic.enabled=true \
+--set extension-newrelic.newrelic.apiBaseUrl={{YOUR-API-BASE-URL}} \
+--set extension-newrelic.newrelic.apiKey={{YOUR-API-KEY}} \
+--set extension-newrelic.newrelic.insightsCollectorApiBaseUrl={{YOUR-INSIGHTS-COLLECTOR-API-BASE-URL}} \
+--set extension-newrelic.newrelic.insightsCollectorApiKey={{YOUR-INSIGHTS-COLLECTOR-API-KEY}} \
 ```
 
-### Using Helm in Kubernetes
+Additional configuration options can be found in
+the [helm-chart](https://github.com/steadybit/extension-newrelic/blob/main/charts/steadybit-extension-newrelic/values.yaml) of the
+extension.
 
-```sh
+#### Alternative (via own helm chart)
+
+If you need more control, you can install the extension via its
+dedicated [helm-chart](https://github.com/steadybit/extension-newrelic/blob/main/charts/steadybit-extension-newrelic).
+
+```bash
 helm repo add steadybit-extension-newrelic https://steadybit.github.io/extension-newrelic
 helm repo update
 helm upgrade steadybit-extension-newrelic \
@@ -42,10 +57,24 @@ helm upgrade steadybit-extension-newrelic \
     --timeout 5m0s \
     --create-namespace \
     --namespace steadybit-agent \
+    --set newrelic.apiBaseUrl={{YOUR-API-BASE-URL}} \
+    --set newrelic.apiKey={{YOUR-API-KEY}} \
+    --set newrelic.insightsCollectorApiBaseUrl={{YOUR-INSIGHTS-COLLECTOR-API-BASE-URL}} \
+    --set newrelic.insightsCollectorApiKey={{YOUR-INSIGHTS-COLLECTOR-API-KEY}} \
     steadybit-extension-newrelic/steadybit-extension-newrelic
 ```
 
-## Register the extension
+### Linux Package
 
-Make sure to register the extension at the steadybit platform. Please refer to
-the [documentation](https://docs.steadybit.com/integrate-with-steadybit/extensions/extension-installation) for more information.
+Please use
+our [agent-linux.sh script](https://docs.steadybit.com/install-and-configure/install-agent/install-on-linux-hosts)
+to install the extension on your Linux machine. The script will download the latest version of the extension and install
+it using the package manager.
+
+After installing, configure the extension by editing `/etc/steadybit/extension-newrelic` and then restart the service.
+
+## Extension registration
+
+Make sure that the extension is registered with the agent. In most cases this is done automatically. Please refer to
+the [documentation](https://docs.steadybit.com/install-and-configure/install-agent/extension-discovery) for more
+information about extension registration and how to verify.

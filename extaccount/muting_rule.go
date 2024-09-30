@@ -56,7 +56,7 @@ func (m *CreateMutingRuleAction) Describe() action_kit_api.ActionDescription {
 				},
 			}),
 		}),
-		Category:    extutil.Ptr("monitoring"),
+		Technology:  extutil.Ptr("New Relic"),
 		Kind:        action_kit_api.Other,
 		TimeControl: action_kit_api.TimeControlExternal,
 		Parameters: []action_kit_api.ActionParameter{

@@ -16,6 +16,7 @@ import (
 	"github.com/steadybit/extension-kit/exthttp"
 	"github.com/steadybit/extension-kit/extlogging"
 	"github.com/steadybit/extension-kit/extruntime"
+	"github.com/steadybit/extension-kit/extsignals"
 	"github.com/steadybit/extension-newrelic/config"
 	"github.com/steadybit/extension-newrelic/extaccount"
 	"github.com/steadybit/extension-newrelic/extevents"

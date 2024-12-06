@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.0.8
+
+- update dependencies
+- Use uid instead of name for user statement in Dockerfile
+
 ## v1.0.7
 
 - Set new `Technology` property in extension description

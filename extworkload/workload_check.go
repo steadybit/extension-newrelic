@@ -54,7 +54,7 @@ func (m *WorkloadCheckAction) Describe() action_kit_api.ActionDescription {
 			QuantityRestriction: extutil.Ptr(action_kit_api.All),
 			SelectionTemplates: extutil.Ptr([]action_kit_api.TargetSelectionTemplate{
 				{
-					Label: "by workload name",
+					Label: "workload name",
 					Query: "new-relic.workload.name=\"\"",
 				},
 			}),

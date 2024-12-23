@@ -57,7 +57,7 @@ func (m *IncidentCheckAction) Describe() action_kit_api.ActionDescription {
 			QuantityRestriction: extutil.Ptr(action_kit_api.All),
 			SelectionTemplates: extutil.Ptr([]action_kit_api.TargetSelectionTemplate{
 				{
-					Label: "by account id",
+					Label: "account id",
 					Query: "new-relic.account.id=\"\"",
 				},
 			}),

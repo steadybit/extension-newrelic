@@ -22,7 +22,6 @@ import (
 	"github.com/steadybit/extension-newrelic/extevents"
 	"github.com/steadybit/extension-newrelic/extincident"
 	"github.com/steadybit/extension-newrelic/extworkload"
-	_ "net/http/pprof" //allow pprof
 )
 
 func main() {

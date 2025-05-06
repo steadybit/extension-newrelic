@@ -130,7 +130,7 @@ func (m *WorkloadCheckAction) Describe() action_kit_api.ActionDescription {
 				Type:  action_kit_api.ComSteadybitWidgetStateOverTime,
 				Title: "New Relic Workload State",
 				Identity: action_kit_api.StateOverTimeWidgetIdentityConfig{
-					From: "id",
+					From: "newrelic.workload-id",
 				},
 				Label: action_kit_api.StateOverTimeWidgetLabelConfig{
 					From: "title",
@@ -247,13 +247,13 @@ func keysToString(m map[string]bool) string {
 func createMetric(target action_kit_api.Target, status *string, now time.Time) *action_kit_api.Metrics {
 	tooltip := fmt.Sprintf("Status: %s", *status)
 	metric := action_kit_api.Metric{
-		Name: extutil.Ptr("instana_events"),
+		Name: extutil.Ptr("new_relic_workload"),
 		Metric: map[string]string{
-			"id":      target.Attributes["new-relic.workload.guid"][0],
-			"title":   target.Attributes["new-relic.workload.name"][0],
-			"state":   getState(status),
-			"tooltip": tooltip,
-			"url":     target.Attributes["new-relic.workload.permalink"][0],
+			"newrelic.workload-id": target.Attributes["new-relic.workload.guid"][0],
+			"title":                target.Attributes["new-relic.workload.name"][0],
+			"state":                getState(status),
+			"tooltip":              tooltip,
+			"url":                  target.Attributes["new-relic.workload.permalink"][0],
 		},
 		Timestamp: now,
 		Value:     0,

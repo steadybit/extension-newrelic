@@ -3,6 +3,7 @@
 ## v1.0.9 (next)
 
 - Updated dependencies
+- Separate metrics for workload and incident check
 
 ## v1.0.8
 

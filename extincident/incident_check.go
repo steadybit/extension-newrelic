@@ -159,7 +159,7 @@ func (m *IncidentCheckAction) Describe() action_kit_api.ActionDescription {
 				Type:  action_kit_api.ComSteadybitWidgetStateOverTime,
 				Title: "New Relic Incidents",
 				Identity: action_kit_api.StateOverTimeWidgetIdentityConfig{
-					From: "id",
+					From: "newrelic.incident-id",
 				},
 				Label: action_kit_api.StateOverTimeWidgetLabelConfig{
 					From: "title",
@@ -330,10 +330,10 @@ func toMetric(incident types.Incident, now time.Time) action_kit_api.Metric {
 	return action_kit_api.Metric{
 		Name: extutil.Ptr("new_relic_incidents"),
 		Metric: map[string]string{
-			"id":      incident.IncidentId,
-			"title":   title,
-			"state":   "danger",
-			"tooltip": fmt.Sprintf("Priority: %s\nTitle: %s\nDescription: %s\nEntity: %s", incident.Priority, incident.Title, incident.Description[0], incident.EntityNames),
+			"newrelic.incident-id": incident.IncidentId,
+			"title":                title,
+			"state":                "danger",
+			"tooltip":              fmt.Sprintf("Priority: %s\nTitle: %s\nDescription: %s\nEntity: %s", incident.Priority, incident.Title, incident.Description[0], incident.EntityNames),
 		},
 		Timestamp: now,
 		Value:     0,

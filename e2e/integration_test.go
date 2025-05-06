@@ -100,7 +100,7 @@ func testCheckWorkload(t *testing.T, m *e2e.Minikube, e *e2e.Extension) {
 	metrics := action.Metrics()
 
 	for _, metric := range metrics {
-		assert.Equal(t, "guid-11111", metric.Metric["id"])
+		assert.Equal(t, "guid-11111", metric.Metric["newrelic.workload-id"])
 		assert.Equal(t, "Example Workload", metric.Metric["title"])
 	}
 }
@@ -138,7 +138,7 @@ func testCheckIncident(t *testing.T, m *e2e.Minikube, e *e2e.Extension) {
 	metrics := action.Metrics()
 
 	assert.Len(t, metrics, 1)
-	assert.Equal(t, "incident-id-1", metrics[0].Metric["id"])
+	assert.Equal(t, "incident-id-1", metrics[0].Metric["newrelic.incident-id"])
 	assert.Equal(t, "ip-10-40-85-195.eu-central-1.compute.internal", metrics[0].Metric["title"])
 }
 

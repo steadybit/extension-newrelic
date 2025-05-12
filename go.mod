@@ -15,7 +15,7 @@ require (
 	github.com/steadybit/discovery-kit/go/discovery_kit_api v1.7.0
 	github.com/steadybit/discovery-kit/go/discovery_kit_sdk v1.3.0
 	github.com/steadybit/discovery-kit/go/discovery_kit_test v1.2.0
-	github.com/steadybit/event-kit/go/event_kit_api v1.5.0
+	github.com/steadybit/event-kit/go/event_kit_api v1.6.0
 	github.com/steadybit/extension-kit v1.10.0
 	github.com/stretchr/testify v1.10.0
 	k8s.io/utils v0.0.0-20250502105355-0f33e8f1c979

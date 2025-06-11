@@ -48,11 +48,11 @@ func (d *accountDiscovery) DescribeTarget() discovery_kit_api.TargetDescription 
 		Icon:     extutil.Ptr(accountIcon),
 		Table: discovery_kit_api.Table{
 			Columns: []discovery_kit_api.Column{
-				{Attribute: "steadybit.label"},
+				{Attribute: "new-relic.account.id"},
 			},
 			OrderBy: []discovery_kit_api.OrderBy{
 				{
-					Attribute: "steadybit.label",
+					Attribute: "new-relic.account.id",
 					Direction: "ASC",
 				},
 			},
@@ -100,7 +100,6 @@ func toTarget(accountId int64) discovery_kit_api.Target {
 	label := fmt.Sprintf("%d", accountId)
 
 	attributes := make(map[string][]string)
-	attributes["steadybit.label"] = []string{label}
 	attributes["new-relic.account.id"] = []string{label}
 
 	return discovery_kit_api.Target{

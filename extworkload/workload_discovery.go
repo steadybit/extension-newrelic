@@ -49,11 +49,12 @@ func (d *workloadDiscovery) DescribeTarget() discovery_kit_api.TargetDescription
 		Icon:     extutil.Ptr(workloadIcon),
 		Table: discovery_kit_api.Table{
 			Columns: []discovery_kit_api.Column{
-				{Attribute: "steadybit.label"},
+				{Attribute: "new-relic.workload.name"},
+				{Attribute: "new-relic.workload.account"},
 			},
 			OrderBy: []discovery_kit_api.OrderBy{
 				{
-					Attribute: "steadybit.label",
+					Attribute: "new-relic.workload.name",
 					Direction: "ASC",
 				},
 			},
@@ -68,6 +69,13 @@ func (d *workloadDiscovery) DescribeAttributes() []discovery_kit_api.AttributeDe
 			Label: discovery_kit_api.PluralLabel{
 				One:   "New Relic Workload Name",
 				Other: "New Relic Workload Names",
+			},
+		},
+		{
+			Attribute: "new-relic.workload.account",
+			Label: discovery_kit_api.PluralLabel{
+				One:   "New Relic Workload Account",
+				Other: "New Relic Workload Accounts",
 			},
 		},
 	}
@@ -110,7 +118,6 @@ func toTarget(workload types.Workload, accountId int64) discovery_kit_api.Target
 	label := fmt.Sprintf("%s (%d)", workload.Name, accountId)
 
 	attributes := make(map[string][]string)
-	attributes["steadybit.label"] = []string{label}
 	attributes["new-relic.workload.name"] = []string{workload.Name}
 	attributes["new-relic.workload.guid"] = []string{workload.Guid}
 	attributes["new-relic.workload.permalink"] = []string{workload.Permalink}

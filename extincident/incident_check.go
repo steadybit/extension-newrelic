@@ -54,7 +54,7 @@ func (m *IncidentCheckAction) Describe() action_kit_api.ActionDescription {
 		Icon:        extutil.Ptr(incidentCheckActionIcon),
 		TargetSelection: extutil.Ptr(action_kit_api.TargetSelection{
 			TargetType:          extaccount.AccountTargetId,
-			QuantityRestriction: extutil.Ptr(action_kit_api.All),
+			QuantityRestriction: extutil.Ptr(action_kit_api.QuantityRestrictionAll),
 			SelectionTemplates: extutil.Ptr([]action_kit_api.TargetSelectionTemplate{
 				{
 					Label: "account id",
@@ -71,7 +71,7 @@ func (m *IncidentCheckAction) Describe() action_kit_api.ActionDescription {
 				Name:         "duration",
 				Label:        "Duration",
 				Description:  extutil.Ptr(""),
-				Type:         action_kit_api.Duration,
+				Type:         action_kit_api.ActionParameterTypeDuration,
 				DefaultValue: extutil.Ptr("30s"),
 				Order:        extutil.Ptr(1),
 				Required:     extutil.Ptr(true),
@@ -80,7 +80,7 @@ func (m *IncidentCheckAction) Describe() action_kit_api.ActionDescription {
 				Name:        "incidentPriorityFilter",
 				Label:       "Incident Priority Filter",
 				Description: extutil.Ptr("Filter incidents by priority."),
-				Type:        action_kit_api.StringArray,
+				Type:        action_kit_api.ActionParameterTypeStringArray,
 				Order:       extutil.Ptr(2),
 				Required:    extutil.Ptr(true),
 				Options: extutil.Ptr([]action_kit_api.ParameterOption{
@@ -107,7 +107,7 @@ func (m *IncidentCheckAction) Describe() action_kit_api.ActionDescription {
 				Name:        "entityTagFilter",
 				Label:       "Entity Tag Filter",
 				Description: extutil.Ptr("Filter incidents by a list of required tags of their related entities"),
-				Type:        action_kit_api.KeyValue,
+				Type:        action_kit_api.ActionParameterTypeKeyValue,
 				Order:       extutil.Ptr(3),
 				Required:    extutil.Ptr(false),
 			},
@@ -115,7 +115,7 @@ func (m *IncidentCheckAction) Describe() action_kit_api.ActionDescription {
 				Name:        "condition",
 				Label:       "Condition",
 				Description: extutil.Ptr(""),
-				Type:        action_kit_api.String,
+				Type:        action_kit_api.ActionParameterTypeString,
 				Options: extutil.Ptr([]action_kit_api.ParameterOption{
 					action_kit_api.ExplicitParameterOption{
 						Label: "No check, only show incidents",
@@ -138,7 +138,7 @@ func (m *IncidentCheckAction) Describe() action_kit_api.ActionDescription {
 				Name:         "conditionCheckMode",
 				Label:        "Condition Check Mode",
 				Description:  extutil.Ptr("Should the step succeed if the condition is met at least once or all the time?"),
-				Type:         action_kit_api.String,
+				Type:         action_kit_api.ActionParameterTypeString,
 				DefaultValue: extutil.Ptr(conditionCheckModeAllTheTime),
 				Options: extutil.Ptr([]action_kit_api.ParameterOption{
 					action_kit_api.ExplicitParameterOption{

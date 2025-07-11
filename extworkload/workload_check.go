@@ -51,7 +51,7 @@ func (m *WorkloadCheckAction) Describe() action_kit_api.ActionDescription {
 		Icon:        extutil.Ptr(workloadCheckActionIcon),
 		TargetSelection: extutil.Ptr(action_kit_api.TargetSelection{
 			TargetType:          WorkloadTargetId,
-			QuantityRestriction: extutil.Ptr(action_kit_api.All),
+			QuantityRestriction: extutil.Ptr(action_kit_api.QuantityRestrictionAll),
 			SelectionTemplates: extutil.Ptr([]action_kit_api.TargetSelectionTemplate{
 				{
 					Label: "workload name",
@@ -68,7 +68,7 @@ func (m *WorkloadCheckAction) Describe() action_kit_api.ActionDescription {
 				Name:         "duration",
 				Label:        "Duration",
 				Description:  extutil.Ptr(""),
-				Type:         action_kit_api.Duration,
+				Type:         action_kit_api.ActionParameterTypeDuration,
 				DefaultValue: extutil.Ptr("30s"),
 				Order:        extutil.Ptr(1),
 				Required:     extutil.Ptr(true),
@@ -77,7 +77,7 @@ func (m *WorkloadCheckAction) Describe() action_kit_api.ActionDescription {
 				Name:        "expectedStates",
 				Label:       "Expected States",
 				Description: extutil.Ptr("Which states are expected? If you select all states, the action will always succeed and just show the current state in a graph."),
-				Type:        action_kit_api.StringArray,
+				Type:        action_kit_api.ActionParameterTypeStringArray,
 				Order:       extutil.Ptr(3),
 				Required:    extutil.Ptr(true),
 				Advanced:    extutil.Ptr(false),
@@ -109,7 +109,7 @@ func (m *WorkloadCheckAction) Describe() action_kit_api.ActionDescription {
 				Name:         "conditionCheckMode",
 				Label:        "Condition Check Mode",
 				Description:  extutil.Ptr("Should the step succeed if the condition is met at least once or all the time?"),
-				Type:         action_kit_api.String,
+				Type:         action_kit_api.ActionParameterTypeString,
 				DefaultValue: extutil.Ptr(conditionCheckModeAllTheTime),
 				Options: extutil.Ptr([]action_kit_api.ParameterOption{
 					action_kit_api.ExplicitParameterOption{

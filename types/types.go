@@ -95,3 +95,7 @@ type GraphQlResponseTags struct {
 type GraphQlResponseError struct {
 	Message string `json:"message"`
 }
+
+func (e *GraphQlResponseError) Error() string {
+	return e.Message
+}

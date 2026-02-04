@@ -6,15 +6,16 @@ package extworkload
 import (
 	"context"
 	"fmt"
+	"slices"
+	"strings"
+	"time"
+
 	"github.com/steadybit/action-kit/go/action_kit_api/v2"
 	"github.com/steadybit/action-kit/go/action_kit_sdk"
 	extension_kit "github.com/steadybit/extension-kit"
 	"github.com/steadybit/extension-kit/extbuild"
 	"github.com/steadybit/extension-kit/extutil"
 	"github.com/steadybit/extension-newrelic/config"
-	"slices"
-	"strings"
-	"time"
 )
 
 type WorkloadCheckAction struct{}
@@ -59,8 +60,8 @@ func (m *WorkloadCheckAction) Describe() action_kit_api.ActionDescription {
 				},
 			}),
 		}),
-		Technology:  extutil.Ptr("New Relic"),
-		Category:    extutil.Ptr("New Relic"), //Can be removed in Q1/24 - support for backward compatibility of old sidebar
+		Technology: extutil.Ptr("New Relic"),
+
 		Kind:        action_kit_api.Check,
 		TimeControl: action_kit_api.TimeControlInternal,
 		Parameters: []action_kit_api.ActionParameter{

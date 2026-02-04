@@ -6,6 +6,8 @@ package extincident
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/rs/zerolog/log"
 	"github.com/steadybit/action-kit/go/action_kit_api/v2"
 	"github.com/steadybit/action-kit/go/action_kit_sdk"
@@ -16,7 +18,6 @@ import (
 	"github.com/steadybit/extension-newrelic/extaccount"
 	"github.com/steadybit/extension-newrelic/types"
 	"k8s.io/utils/strings/slices"
-	"time"
 )
 
 type IncidentCheckAction struct{}
@@ -62,8 +63,8 @@ func (m *IncidentCheckAction) Describe() action_kit_api.ActionDescription {
 				},
 			}),
 		}),
-		Technology:  extutil.Ptr("New Relic"),
-		Category:    extutil.Ptr("New Relic"), //Can be removed in Q1/24 - support for backward compatibility of old sidebar
+		Technology: extutil.Ptr("New Relic"),
+
 		Kind:        action_kit_api.Check,
 		TimeControl: action_kit_api.TimeControlInternal,
 		Parameters: []action_kit_api.ActionParameter{

@@ -6,13 +6,14 @@ package extaccount
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/steadybit/action-kit/go/action_kit_api/v2"
 	"github.com/steadybit/action-kit/go/action_kit_sdk"
 	extension_kit "github.com/steadybit/extension-kit"
 	"github.com/steadybit/extension-kit/extbuild"
 	"github.com/steadybit/extension-kit/extutil"
 	"github.com/steadybit/extension-newrelic/config"
-	"time"
 )
 
 type CreateMutingRuleAction struct{}
@@ -56,8 +57,8 @@ func (m *CreateMutingRuleAction) Describe() action_kit_api.ActionDescription {
 				},
 			}),
 		}),
-		Technology:  extutil.Ptr("New Relic"),
-		Category:    extutil.Ptr("New Relic"), //Can be removed in Q1/24 - support for backward compatibility of old sidebar
+		Technology: extutil.Ptr("New Relic"),
+
 		Kind:        action_kit_api.Other,
 		TimeControl: action_kit_api.TimeControlExternal,
 		Parameters: []action_kit_api.ActionParameter{

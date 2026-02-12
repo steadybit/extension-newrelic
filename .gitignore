@@ -5,3 +5,5 @@
 /snyk.sarif
 /gpg.key
 /extension-newrelic.run.xml
+
+.env

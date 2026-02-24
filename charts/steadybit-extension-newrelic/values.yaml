@@ -15,13 +15,17 @@ newrelic:
   existingSecret: null
 
 image:
+  # image.registry -- The container registry to use. Defaults to global.image.registry or ghcr.io.
+  registry: null
   # image.name -- The container image to use for the Steadybit newrelic extension.
-  name: ghcr.io/steadybit/extension-newrelic
+  name: steadybit/extension-newrelic
   # image.tag -- tag name of the extension-newrelic container image to use. Defaults to appVersion of this chart.
   # See https://github.com/steadybit/extension-newrelic/pkgs/container/extension-newrelic/versions for all tags.
   tag: null
   # image.pullPolicy -- Specifies when to pull the image container.
   pullPolicy: IfNotPresent
+  # image.pullSecrets -- List of image pull secret names.
+  pullSecrets: []
 
 tls:
   server:

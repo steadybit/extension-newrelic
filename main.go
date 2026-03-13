@@ -5,6 +5,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/rs/zerolog"
 	"github.com/steadybit/action-kit/go/action_kit_api/v2"
 	"github.com/steadybit/action-kit/go/action_kit_sdk"
@@ -24,6 +26,8 @@ import (
 	"github.com/steadybit/extension-newrelic/extworkload"
 )
 
+var startedAt = time.Now().Format(time.RFC3339)
+
 func main() {
 	extlogging.InitZeroLog()
 	extbuild.PrintBuildInformation()
@@ -34,13 +38,14 @@ func main() {
 	exthealth.SetReady(false)
 	exthealth.StartProbes(8091)
 
-	exthttp.RegisterHttpHandler("/", exthttp.GetterAsHandler(getExtensionList))
 	discovery_kit_sdk.Register(extworkload.NewWorkloadDiscovery())
 	discovery_kit_sdk.Register(extaccount.NewAccountDiscovery())
 	action_kit_sdk.RegisterAction(extworkload.NewWorkloadCheckAction())
 	action_kit_sdk.RegisterAction(extaccount.NewCreateMutingRuleAction())
 	action_kit_sdk.RegisterAction(extincident.NewIncidentCheckAction())
 	extevents.RegisterEventListenerHandlers()
+
+	exthttp.RegisterHttpHandler("/", exthttp.IfNoneMatchHandler(func() string { return startedAt }, exthttp.GetterAsHandler(getExtensionList)))
 
 	extsignals.ActivateSignalHandlers()
 	action_kit_sdk.RegisterCoverageEndpoints()

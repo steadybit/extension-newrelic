@@ -46,18 +46,18 @@ func (m *CreateMutingRuleAction) Describe() action_kit_api.ActionDescription {
 		Label:       "Create Muting Rule",
 		Description: "Mute your alerts for a given duration.",
 		Version:     extbuild.GetSemverVersionStringOrUnknown(),
-		Icon:        extutil.Ptr(createMutingRuleIcon),
-		TargetSelection: extutil.Ptr(action_kit_api.TargetSelection{
+		Icon:        new(createMutingRuleIcon),
+		TargetSelection: new(action_kit_api.TargetSelection{
 			TargetType:          AccountTargetId,
 			QuantityRestriction: extutil.Ptr(action_kit_api.QuantityRestrictionAll),
-			SelectionTemplates: extutil.Ptr([]action_kit_api.TargetSelectionTemplate{
+			SelectionTemplates: new([]action_kit_api.TargetSelectionTemplate{
 				{
 					Label: "account id",
 					Query: "new-relic.account.id=\"\"",
 				},
 			}),
 		}),
-		Technology: extutil.Ptr("New Relic"),
+		Technology: new("New Relic"),
 
 		Kind:        action_kit_api.Other,
 		TimeControl: action_kit_api.TimeControlExternal,
@@ -65,14 +65,14 @@ func (m *CreateMutingRuleAction) Describe() action_kit_api.ActionDescription {
 			{
 				Name:         "duration",
 				Label:        "Duration",
-				Description:  extutil.Ptr(""),
+				Description:  new(""),
 				Type:         action_kit_api.ActionParameterTypeDuration,
-				DefaultValue: extutil.Ptr("30s"),
-				Order:        extutil.Ptr(1),
-				Required:     extutil.Ptr(true),
+				DefaultValue: new("30s"),
+				Order:        new(1),
+				Required:     new(true),
 			},
 		},
-		Stop: extutil.Ptr(action_kit_api.MutatingEndpointReference{}),
+		Stop: new(action_kit_api.MutatingEndpointReference{}),
 	}
 }
 

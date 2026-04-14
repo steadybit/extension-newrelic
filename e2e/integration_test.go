@@ -9,7 +9,6 @@ import (
 	"github.com/steadybit/action-kit/go/action_kit_test/e2e"
 	"github.com/steadybit/discovery-kit/go/discovery_kit_test/validate"
 	"github.com/steadybit/extension-kit/extlogging"
-	"github.com/steadybit/extension-kit/extutil"
 	"github.com/steadybit/extension-newrelic/extaccount"
 	"github.com/steadybit/extension-newrelic/extincident"
 	"github.com/steadybit/extension-newrelic/extworkload"
@@ -113,12 +112,12 @@ func testCheckIncident(t *testing.T, m *e2e.Minikube, e *e2e.Extension) {
 		},
 	}
 	config := struct {
-		Duration               int           `json:"duration"`
-		IncidentPriorityFilter []string      `json:"incidentPriorityFilter"`
-		EntityTagFilter        []interface{} `json:"entityTagFilter"`
-		Condition              string        `json:"condition"`
-		ConditionCheckMode     string        `json:"conditionCheckMode"`
-	}{Duration: 1000, IncidentPriorityFilter: []string{"CRITICAL"}, EntityTagFilter: []interface{}{map[string]interface{}{"key": "my-tag", "value": "my-value"}}, ConditionCheckMode: "showOnly"}
+		Duration               int      `json:"duration"`
+		IncidentPriorityFilter []string `json:"incidentPriorityFilter"`
+		EntityTagFilter        []any    `json:"entityTagFilter"`
+		Condition              string   `json:"condition"`
+		ConditionCheckMode     string   `json:"conditionCheckMode"`
+	}{Duration: 1000, IncidentPriorityFilter: []string{"CRITICAL"}, EntityTagFilter: []any{map[string]any{"key": "my-tag", "value": "my-value"}}, ConditionCheckMode: "showOnly"}
 
 	executionContext := &action_kit_api.ExecutionContext{}
 
@@ -155,10 +154,10 @@ func testCreateMutingRule(t *testing.T, m *e2e.Minikube, e *e2e.Extension) {
 	}{Duration: 1000}
 
 	executionContext := &action_kit_api.ExecutionContext{
-		ExecutionId:   extutil.Ptr(123),
-		ExperimentKey: extutil.Ptr("TST-1"),
-		ExperimentUri: extutil.Ptr("https://experiment-uri"),
-		ExecutionUri:  extutil.Ptr("https://execution-uri"),
+		ExecutionId:   new(123),
+		ExperimentKey: new("TST-1"),
+		ExperimentUri: new("https://experiment-uri"),
+		ExecutionUri:  new("https://execution-uri"),
 	}
 
 	action, err := e.RunAction(extaccount.CreateMutingRuleActionId, target, config, executionContext)

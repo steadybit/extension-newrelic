@@ -99,7 +99,7 @@ func onExperimentStarted(event *event_kit_api.EventRequestBody) (*types.EventIng
 }
 
 func onExperimentCompleted(event *event_kit_api.EventRequestBody) (*types.EventIngest, error) {
-	stepExecutions.Range(func(key, value interface{}) bool {
+	stepExecutions.Range(func(key, value any) bool {
 		stepExecution := value.(event_kit_api.ExperimentStepExecution)
 		if stepExecution.ExecutionId == event.ExperimentExecution.ExecutionId {
 			log.Debug().Msgf("Delete step execution data for id %.0f", stepExecution.ExecutionId)

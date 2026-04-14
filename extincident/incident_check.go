@@ -52,18 +52,18 @@ func (m *IncidentCheckAction) Describe() action_kit_api.ActionDescription {
 		Label:       "Incident Check",
 		Description: "Checks for the existence of incidents in New Relic.",
 		Version:     extbuild.GetSemverVersionStringOrUnknown(),
-		Icon:        extutil.Ptr(incidentCheckActionIcon),
-		TargetSelection: extutil.Ptr(action_kit_api.TargetSelection{
+		Icon:        new(incidentCheckActionIcon),
+		TargetSelection: new(action_kit_api.TargetSelection{
 			TargetType:          extaccount.AccountTargetId,
 			QuantityRestriction: extutil.Ptr(action_kit_api.QuantityRestrictionAll),
-			SelectionTemplates: extutil.Ptr([]action_kit_api.TargetSelectionTemplate{
+			SelectionTemplates: new([]action_kit_api.TargetSelectionTemplate{
 				{
 					Label: "account id",
 					Query: "new-relic.account.id=\"\"",
 				},
 			}),
 		}),
-		Technology: extutil.Ptr("New Relic"),
+		Technology: new("New Relic"),
 
 		Kind:        action_kit_api.Check,
 		TimeControl: action_kit_api.TimeControlInternal,
@@ -71,20 +71,20 @@ func (m *IncidentCheckAction) Describe() action_kit_api.ActionDescription {
 			{
 				Name:         "duration",
 				Label:        "Duration",
-				Description:  extutil.Ptr(""),
+				Description:  new(""),
 				Type:         action_kit_api.ActionParameterTypeDuration,
-				DefaultValue: extutil.Ptr("30s"),
-				Order:        extutil.Ptr(1),
-				Required:     extutil.Ptr(true),
+				DefaultValue: new("30s"),
+				Order:        new(1),
+				Required:     new(true),
 			},
 			{
 				Name:        "incidentPriorityFilter",
 				Label:       "Incident Priority Filter",
-				Description: extutil.Ptr("Filter incidents by priority."),
+				Description: new("Filter incidents by priority."),
 				Type:        action_kit_api.ActionParameterTypeStringArray,
-				Order:       extutil.Ptr(2),
-				Required:    extutil.Ptr(true),
-				Options: extutil.Ptr([]action_kit_api.ParameterOption{
+				Order:       new(2),
+				Required:    new(true),
+				Options: new([]action_kit_api.ParameterOption{
 					action_kit_api.ExplicitParameterOption{
 						Label: "Low",
 						Value: "LOW",
@@ -102,22 +102,22 @@ func (m *IncidentCheckAction) Describe() action_kit_api.ActionDescription {
 						Value: "CRITICAL",
 					},
 				}),
-				DefaultValue: extutil.Ptr("[\"LOW\",\"MEDIUM\",\"HIGH\",\"CRITICAL\"]"),
+				DefaultValue: new("[\"LOW\",\"MEDIUM\",\"HIGH\",\"CRITICAL\"]"),
 			},
 			{
 				Name:        "entityTagFilter",
 				Label:       "Entity Tag Filter",
-				Description: extutil.Ptr("Filter incidents by a list of required tags of their related entities"),
+				Description: new("Filter incidents by a list of required tags of their related entities"),
 				Type:        action_kit_api.ActionParameterTypeKeyValue,
-				Order:       extutil.Ptr(3),
-				Required:    extutil.Ptr(false),
+				Order:       new(3),
+				Required:    new(false),
 			},
 			{
 				Name:        "condition",
 				Label:       "Condition",
-				Description: extutil.Ptr(""),
+				Description: new(""),
 				Type:        action_kit_api.ActionParameterTypeString,
-				Options: extutil.Ptr([]action_kit_api.ParameterOption{
+				Options: new([]action_kit_api.ParameterOption{
 					action_kit_api.ExplicitParameterOption{
 						Label: "No check, only show incidents",
 						Value: conditionShowOnly,
@@ -131,17 +131,17 @@ func (m *IncidentCheckAction) Describe() action_kit_api.ActionDescription {
 						Value: conditionAtLeastOneIncident,
 					},
 				}),
-				DefaultValue: extutil.Ptr(conditionShowOnly),
-				Order:        extutil.Ptr(4),
-				Required:     extutil.Ptr(true),
+				DefaultValue: new(conditionShowOnly),
+				Order:        new(4),
+				Required:     new(true),
 			},
 			{
 				Name:         "conditionCheckMode",
 				Label:        "Condition Check Mode",
-				Description:  extutil.Ptr("Should the step succeed if the condition is met at least once or all the time?"),
+				Description:  new("Should the step succeed if the condition is met at least once or all the time?"),
 				Type:         action_kit_api.ActionParameterTypeString,
-				DefaultValue: extutil.Ptr(conditionCheckModeAllTheTime),
-				Options: extutil.Ptr([]action_kit_api.ParameterOption{
+				DefaultValue: new(conditionCheckModeAllTheTime),
+				Options: new([]action_kit_api.ParameterOption{
 					action_kit_api.ExplicitParameterOption{
 						Label: "All the time",
 						Value: conditionCheckModeAllTheTime,
@@ -151,11 +151,11 @@ func (m *IncidentCheckAction) Describe() action_kit_api.ActionDescription {
 						Value: conditionCheckModeAtLeastOnce,
 					},
 				}),
-				Required: extutil.Ptr(true),
-				Order:    extutil.Ptr(5),
+				Required: new(true),
+				Order:    new(5),
 			},
 		},
-		Widgets: extutil.Ptr([]action_kit_api.Widget{
+		Widgets: new([]action_kit_api.Widget{
 			action_kit_api.StateOverTimeWidget{
 				Type:  action_kit_api.ComSteadybitWidgetStateOverTime,
 				Title: "New Relic Incidents",
@@ -171,18 +171,18 @@ func (m *IncidentCheckAction) Describe() action_kit_api.ActionDescription {
 				Tooltip: action_kit_api.StateOverTimeWidgetTooltipConfig{
 					From: "tooltip",
 				},
-				Url: extutil.Ptr(action_kit_api.StateOverTimeWidgetUrlConfig{
-					From: extutil.Ptr("url"),
+				Url: new(action_kit_api.StateOverTimeWidgetUrlConfig{
+					From: new("url"),
 				}),
-				Value: extutil.Ptr(action_kit_api.StateOverTimeWidgetValueConfig{
-					Hide: extutil.Ptr(true),
+				Value: new(action_kit_api.StateOverTimeWidgetValueConfig{
+					Hide: new(true),
 				}),
 			},
 		}),
 		Prepare: action_kit_api.MutatingEndpointReference{},
 		Start:   action_kit_api.MutatingEndpointReference{},
-		Status: extutil.Ptr(action_kit_api.MutatingEndpointReferenceWithCallInterval{
-			CallInterval: extutil.Ptr("5s"),
+		Status: new(action_kit_api.MutatingEndpointReferenceWithCallInterval{
+			CallInterval: new("5s"),
 		}),
 	}
 }
@@ -257,13 +257,13 @@ func IncidentCheckStatus(ctx context.Context, state *IncidentCheckState, api Inc
 	var checkError *action_kit_api.ActionKitError
 	if state.ConditionCheckMode == conditionCheckModeAllTheTime {
 		if state.Condition == conditionNoIncidents && len(filteredIncidents) > 0 {
-			checkError = extutil.Ptr(action_kit_api.ActionKitError{
+			checkError = new(action_kit_api.ActionKitError{
 				Title:  fmt.Sprintf("No incident expected, but %d incidents found.", len(filteredIncidents)),
 				Status: extutil.Ptr(action_kit_api.Failed),
 			})
 		}
 		if state.Condition == conditionAtLeastOneIncident && len(filteredIncidents) == 0 {
-			checkError = extutil.Ptr(action_kit_api.ActionKitError{
+			checkError = new(action_kit_api.ActionKitError{
 				Title:  "At least one incident expected, but no incidents found.",
 				Status: extutil.Ptr(action_kit_api.Failed),
 			})
@@ -278,12 +278,12 @@ func IncidentCheckStatus(ctx context.Context, state *IncidentCheckState, api Inc
 		}
 		if completed && !state.ConditionCheckSuccess {
 			if state.Condition == conditionNoIncidents {
-				checkError = extutil.Ptr(action_kit_api.ActionKitError{
+				checkError = new(action_kit_api.ActionKitError{
 					Title:  "No incident expected, but incidents found.",
 					Status: extutil.Ptr(action_kit_api.Failed),
 				})
 			} else if state.Condition == conditionAtLeastOneIncident {
-				checkError = extutil.Ptr(action_kit_api.ActionKitError{
+				checkError = new(action_kit_api.ActionKitError{
 					Title:  "At least one incident expected, but no incidents found.",
 					Status: extutil.Ptr(action_kit_api.Failed),
 				})
@@ -299,7 +299,7 @@ func IncidentCheckStatus(ctx context.Context, state *IncidentCheckState, api Inc
 	return &action_kit_api.StatusResult{
 		Completed: completed,
 		Error:     checkError,
-		Metrics:   extutil.Ptr(metrics),
+		Metrics:   new(metrics),
 	}, nil
 }
 
@@ -329,7 +329,7 @@ func toMetric(incident types.Incident, now time.Time) action_kit_api.Metric {
 		title = incident.Title
 	}
 	return action_kit_api.Metric{
-		Name: extutil.Ptr("new_relic_incidents"),
+		Name: new("new_relic_incidents"),
 		Metric: map[string]string{
 			"newrelic.incident-id": incident.IncidentId,
 			"title":                title,

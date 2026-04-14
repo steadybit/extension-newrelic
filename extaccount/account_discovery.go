@@ -10,7 +10,6 @@ import (
 	"github.com/steadybit/discovery-kit/go/discovery_kit_api"
 	"github.com/steadybit/discovery-kit/go/discovery_kit_sdk"
 	"github.com/steadybit/extension-kit/extbuild"
-	"github.com/steadybit/extension-kit/extutil"
 	"github.com/steadybit/extension-newrelic/config"
 	"time"
 )
@@ -34,7 +33,7 @@ func (d *accountDiscovery) Describe() discovery_kit_api.DiscoveryDescription {
 	return discovery_kit_api.DiscoveryDescription{
 		Id: AccountTargetId,
 		Discover: discovery_kit_api.DescribingEndpointReferenceWithCallInterval{
-			CallInterval: extutil.Ptr("10m"),
+			CallInterval: new("10m"),
 		},
 	}
 }
@@ -43,9 +42,9 @@ func (d *accountDiscovery) DescribeTarget() discovery_kit_api.TargetDescription 
 	return discovery_kit_api.TargetDescription{
 		Id:       AccountTargetId,
 		Label:    discovery_kit_api.PluralLabel{One: "New Relic Account", Other: "New Relic Account"},
-		Category: extutil.Ptr("monitoring"),
+		Category: new("monitoring"),
 		Version:  extbuild.GetSemverVersionStringOrUnknown(),
-		Icon:     extutil.Ptr(accountIcon),
+		Icon:     new(accountIcon),
 		Table: discovery_kit_api.Table{
 			Columns: []discovery_kit_api.Column{
 				{Attribute: "new-relic.account.id"},

@@ -12,10 +12,10 @@ import (
 	"fmt"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/rs/zerolog/log"
-	"github.com/steadybit/extension-kit/extutil"
 	"github.com/steadybit/extension-newrelic/types"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -53,7 +53,7 @@ const accountsQuery = `{actor {accounts {id}}}`
 func (s *Specification) GetAccountIds(_ context.Context) ([]int64, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
 
-	responseBody, response, err := s.do(url, "POST", []byte(fmt.Sprintf("{\"query\": \"%s\"}", accountsQuery)), s.ApiKey)
+	responseBody, response, err := s.do(url, "POST", fmt.Appendf(nil, "{\"query\": \"%s\"}", accountsQuery), s.ApiKey)
 	if err != nil {
 		log.Error().Err(err).Msgf("Failed to get accounts from New Relic. Full response %+v", string(responseBody))
 		return nil, err
@@ -92,7 +92,7 @@ const workloadQuery = `{actor {account(id: %d){workload {collections {guid name 
 func (s *Specification) GetWorkloads(_ context.Context, accountId int64) ([]types.Workload, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
 
-	responseBody, response, err := s.do(url, "POST", []byte(fmt.Sprintf("{\"query\": \"%s\"}", fmt.Sprintf(workloadQuery, accountId))), s.ApiKey)
+	responseBody, response, err := s.do(url, "POST", fmt.Appendf(nil, "{\"query\": \"%s\"}", fmt.Sprintf(workloadQuery, accountId)), s.ApiKey)
 	if err != nil {
 		log.Error().Err(err).Msgf("Failed to get workloads from New Relic. Full response %+v", string(responseBody))
 		return nil, err
@@ -125,7 +125,7 @@ const workloadStatusQuery = `{actor {account(id: %d){ workload { collection(guid
 func (s *Specification) GetWorkloadStatus(_ context.Context, workloadGuid string, accountId int64) (*string, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
 
-	responseBody, response, err := s.do(url, "POST", []byte(fmt.Sprintf("{\"query\": \"%s\"}", fmt.Sprintf(workloadStatusQuery, accountId, workloadGuid))), s.ApiKey)
+	responseBody, response, err := s.do(url, "POST", fmt.Appendf(nil, "{\"query\": \"%s\"}", fmt.Sprintf(workloadStatusQuery, accountId, workloadGuid)), s.ApiKey)
 	if err != nil {
 		log.Error().Err(err).Str("workloadGuid", workloadGuid).Msgf("Failed to get workload status from New Relic. Full response %+v", string(responseBody))
 		return nil, err
@@ -152,7 +152,7 @@ func (s *Specification) GetWorkloadStatus(_ context.Context, workloadGuid string
 		//Workaround - New Relic has regular timeouts
 		//{"data":{"actor":{"account":{"workload":{"collection":null}}}},"errors":[{"extensions":{"errorClass":"TIMEOUT"},"locations":[{"column":42,"line":1}],"message":"Resolution of this field timed out","path":["actor","account","workload","collection"]}]}
 		log.Warn().Err(err).Str("body", string(responseBody)).Msgf("Unexpected response body, return status UNKNOWN")
-		return extutil.Ptr("UNKNOWN"), nil
+		return new("UNKNOWN"), nil
 	} else {
 		log.Error().Err(err).Msgf("Empty response body")
 		return nil, errors.New("empty response body")
@@ -164,7 +164,7 @@ const mutingRuleCreate = `mutation{alertsMutingRuleCreate(accountId: %d rule: {c
 func (s *Specification) CreateMutingRule(_ context.Context, accountId int64, name string, description string, end time.Time) (*string, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
 	endString := end.UTC().Format("2006-01-02T15:04:05")
-	responseBody, response, err := s.do(url, "POST", []byte(fmt.Sprintf("{\"query\": \"%s\"}", fmt.Sprintf(mutingRuleCreate, accountId, accountId, name, endString, description))), s.ApiKey)
+	responseBody, response, err := s.do(url, "POST", fmt.Appendf(nil, "{\"query\": \"%s\"}", fmt.Sprintf(mutingRuleCreate, accountId, accountId, name, endString, description)), s.ApiKey)
 	if err != nil {
 		log.Error().Err(err).Msgf("Failed to create muting rule in New Relic. Full response %+v", string(responseBody))
 		return nil, err
@@ -197,7 +197,7 @@ const mutingRuleDelete = `mutation {alertsMutingRuleDelete(id: %s, accountId: %d
 
 func (s *Specification) DeleteMutingRule(_ context.Context, accountId int64, mutingRuleId string) error {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
-	responseBody, response, err := s.do(url, "POST", []byte(fmt.Sprintf("{\"query\": \"%s\"}", fmt.Sprintf(mutingRuleDelete, mutingRuleId, accountId))), s.ApiKey)
+	responseBody, response, err := s.do(url, "POST", fmt.Appendf(nil, "{\"query\": \"%s\"}", fmt.Sprintf(mutingRuleDelete, mutingRuleId, accountId)), s.ApiKey)
 	if err != nil {
 		log.Error().Err(err).Msgf("Failed to delete muting rule in New Relic. Full response %+v", string(responseBody))
 		return err
@@ -216,7 +216,7 @@ const entityTagsQuery = `{actor {entities(guids: \"%s\"){tags {key values}}}}`
 func (s *Specification) GetEntityTags(_ context.Context, guid string) (map[string][]string, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
 
-	responseBody, response, err := s.do(url, "POST", []byte(fmt.Sprintf("{\"query\": \"%s\"}", fmt.Sprintf(entityTagsQuery, guid))), s.ApiKey)
+	responseBody, response, err := s.do(url, "POST", fmt.Appendf(nil, "{\"query\": \"%s\"}", fmt.Sprintf(entityTagsQuery, guid)), s.ApiKey)
 	if err != nil {
 		log.Error().Err(err).Msgf("Failed to get entity tags from New Relic. Full response %+v", string(responseBody))
 		return nil, err
@@ -258,14 +258,14 @@ const incidentsQuery = `{actor {account(id: %d){aiIssues {incidents(filter: {pri
 func (s *Specification) GetIncidents(_ context.Context, incidentPriorityFilter []string, accountId int64) ([]types.Incident, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
 
-	priorityFilter := ""
+	var priorityFilter strings.Builder
 	for i, priority := range incidentPriorityFilter {
 		if i > 0 {
-			priorityFilter += ","
+			priorityFilter.WriteString(",")
 		}
-		priorityFilter += fmt.Sprintf("\\\"%s\\\"", priority)
+		priorityFilter.WriteString(fmt.Sprintf("\\\"%s\\\"", priority))
 	}
-	responseBody, response, err := s.do(url, "POST", []byte(fmt.Sprintf("{\"query\": \"%s\"}", fmt.Sprintf(incidentsQuery, accountId, priorityFilter))), s.ApiKey)
+	responseBody, response, err := s.do(url, "POST", fmt.Appendf(nil, "{\"query\": \"%s\"}", fmt.Sprintf(incidentsQuery, accountId, priorityFilter.String())), s.ApiKey)
 	if err != nil {
 		log.Error().Err(err).Msgf("Failed to get incidents from New Relic. Full response %+v", string(responseBody))
 		return nil, err

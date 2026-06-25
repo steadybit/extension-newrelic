@@ -35,7 +35,25 @@ type Specification struct {
 
 var (
 	Config Specification
+	// httpClient is shared and has a timeout so a slow or unresponsive New Relic API
+	// cannot block discovery, status checks or event delivery indefinitely.
+	httpClient = &http.Client{Timeout: 30 * time.Second}
 )
+
+// graphQlRequestBody builds the `{"query": ...}` request envelope. Using json.Marshal
+// (rather than hand-formatting the JSON) ensures the query is correctly escaped.
+func graphQlRequestBody(query string) []byte {
+	body, _ := json.Marshal(map[string]string{"query": query})
+	return body
+}
+
+// graphQlString renders a value as a quoted, escaped GraphQL string literal so that
+// quotes, backslashes or newlines in the value cannot break out of the literal and
+// inject into the surrounding query (JSON string escaping is valid for GraphQL).
+func graphQlString(value string) string {
+	encoded, _ := json.Marshal(value)
+	return string(encoded)
+}
 
 func ParseConfiguration() {
 	err := envconfig.Process("steadybit_extension", &Config)
@@ -53,7 +71,7 @@ const accountsQuery = `{actor {accounts {id}}}`
 func (s *Specification) GetAccountIds(_ context.Context) ([]int64, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
 
-	responseBody, response, err := s.do(url, "POST", fmt.Appendf(nil, "{\"query\": \"%s\"}", accountsQuery), s.ApiKey)
+	responseBody, response, err := s.do(url, "POST", graphQlRequestBody(accountsQuery), s.ApiKey)
 	if err != nil {
 		log.Error().Err(err).Msgf("Failed to get accounts from New Relic. Full response %+v", string(responseBody))
 		return nil, err
@@ -92,7 +110,7 @@ const workloadQuery = `{actor {account(id: %d){workload {collections {guid name 
 func (s *Specification) GetWorkloads(_ context.Context, accountId int64) ([]types.Workload, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
 
-	responseBody, response, err := s.do(url, "POST", fmt.Appendf(nil, "{\"query\": \"%s\"}", fmt.Sprintf(workloadQuery, accountId)), s.ApiKey)
+	responseBody, response, err := s.do(url, "POST", graphQlRequestBody(fmt.Sprintf(workloadQuery, accountId)), s.ApiKey)
 	if err != nil {
 		log.Error().Err(err).Msgf("Failed to get workloads from New Relic. Full response %+v", string(responseBody))
 		return nil, err
@@ -120,12 +138,12 @@ func (s *Specification) GetWorkloads(_ context.Context, accountId int64) ([]type
 	}
 }
 
-const workloadStatusQuery = `{actor {account(id: %d){ workload { collection(guid: \"%s\") {status {value}}}}}}`
+const workloadStatusQuery = `{actor {account(id: %d){ workload { collection(guid: %s) {status {value}}}}}}`
 
 func (s *Specification) GetWorkloadStatus(_ context.Context, workloadGuid string, accountId int64) (*string, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
 
-	responseBody, response, err := s.do(url, "POST", fmt.Appendf(nil, "{\"query\": \"%s\"}", fmt.Sprintf(workloadStatusQuery, accountId, workloadGuid)), s.ApiKey)
+	responseBody, response, err := s.do(url, "POST", graphQlRequestBody(fmt.Sprintf(workloadStatusQuery, accountId, graphQlString(workloadGuid))), s.ApiKey)
 	if err != nil {
 		log.Error().Err(err).Str("workloadGuid", workloadGuid).Msgf("Failed to get workload status from New Relic. Full response %+v", string(responseBody))
 		return nil, err
@@ -159,12 +177,12 @@ func (s *Specification) GetWorkloadStatus(_ context.Context, workloadGuid string
 	}
 }
 
-const mutingRuleCreate = `mutation{alertsMutingRuleCreate(accountId: %d rule: {condition: {conditions: {attribute: \"accountId\", operator: EQUALS, values: \"%d\"}, operator: AND}, name: \"%s\", schedule: {endTime: \"%s\", timeZone: \"UTC\"}, description: \"%s\", enabled: true}  ) {id}}`
+const mutingRuleCreate = `mutation{alertsMutingRuleCreate(accountId: %d rule: {condition: {conditions: {attribute: "accountId", operator: EQUALS, values: "%d"}, operator: AND}, name: %s, schedule: {endTime: "%s", timeZone: "UTC"}, description: %s, enabled: true}  ) {id}}`
 
 func (s *Specification) CreateMutingRule(_ context.Context, accountId int64, name string, description string, end time.Time) (*string, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
 	endString := end.UTC().Format("2006-01-02T15:04:05")
-	responseBody, response, err := s.do(url, "POST", fmt.Appendf(nil, "{\"query\": \"%s\"}", fmt.Sprintf(mutingRuleCreate, accountId, accountId, name, endString, description)), s.ApiKey)
+	responseBody, response, err := s.do(url, "POST", graphQlRequestBody(fmt.Sprintf(mutingRuleCreate, accountId, accountId, graphQlString(name), endString, graphQlString(description))), s.ApiKey)
 	if err != nil {
 		log.Error().Err(err).Msgf("Failed to create muting rule in New Relic. Full response %+v", string(responseBody))
 		return nil, err
@@ -197,7 +215,7 @@ const mutingRuleDelete = `mutation {alertsMutingRuleDelete(id: %s, accountId: %d
 
 func (s *Specification) DeleteMutingRule(_ context.Context, accountId int64, mutingRuleId string) error {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
-	responseBody, response, err := s.do(url, "POST", fmt.Appendf(nil, "{\"query\": \"%s\"}", fmt.Sprintf(mutingRuleDelete, mutingRuleId, accountId)), s.ApiKey)
+	responseBody, response, err := s.do(url, "POST", graphQlRequestBody(fmt.Sprintf(mutingRuleDelete, graphQlString(mutingRuleId), accountId)), s.ApiKey)
 	if err != nil {
 		log.Error().Err(err).Msgf("Failed to delete muting rule in New Relic. Full response %+v", string(responseBody))
 		return err
@@ -211,12 +229,12 @@ func (s *Specification) DeleteMutingRule(_ context.Context, accountId int64, mut
 	return nil
 }
 
-const entityTagsQuery = `{actor {entities(guids: \"%s\"){tags {key values}}}}`
+const entityTagsQuery = `{actor {entities(guids: %s){tags {key values}}}}`
 
 func (s *Specification) GetEntityTags(_ context.Context, guid string) (map[string][]string, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
 
-	responseBody, response, err := s.do(url, "POST", fmt.Appendf(nil, "{\"query\": \"%s\"}", fmt.Sprintf(entityTagsQuery, guid)), s.ApiKey)
+	responseBody, response, err := s.do(url, "POST", graphQlRequestBody(fmt.Sprintf(entityTagsQuery, graphQlString(guid))), s.ApiKey)
 	if err != nil {
 		log.Error().Err(err).Msgf("Failed to get entity tags from New Relic. Full response %+v", string(responseBody))
 		return nil, err
@@ -263,9 +281,9 @@ func (s *Specification) GetIncidents(_ context.Context, incidentPriorityFilter [
 		if i > 0 {
 			priorityFilter.WriteString(",")
 		}
-		priorityFilter.WriteString(fmt.Sprintf("\\\"%s\\\"", priority))
+		priorityFilter.WriteString(graphQlString(priority))
 	}
-	responseBody, response, err := s.do(url, "POST", fmt.Appendf(nil, "{\"query\": \"%s\"}", fmt.Sprintf(incidentsQuery, accountId, priorityFilter.String())), s.ApiKey)
+	responseBody, response, err := s.do(url, "POST", graphQlRequestBody(fmt.Sprintf(incidentsQuery, accountId, priorityFilter.String())), s.ApiKey)
 	if err != nil {
 		log.Error().Err(err).Msgf("Failed to get incidents from New Relic. Full response %+v", string(responseBody))
 		return nil, err
@@ -339,8 +357,7 @@ func (s *Specification) do(url string, method string, body []byte, apiKey string
 	request.Header.Set("Content-Type", "application/json; charset=UTF-8")
 	request.Header.Set("API-Key", apiKey)
 
-	client := &http.Client{}
-	response, err := client.Do(request)
+	response, err := httpClient.Do(request)
 	if err != nil {
 		log.Error().Err(err).Msgf("Failed to execute request")
 		return nil, response, err

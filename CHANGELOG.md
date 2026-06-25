@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- fix: escape values interpolated into New Relic GraphQL queries and build the request envelope with a JSON encoder, preventing query/JSON injection via muting-rule name/description, workload/entity guids and incident priorities
+- fix: do not panic when delivering events while New Relic accounts could not be loaded, or when an incident has no description
+- fix: set a timeout on the New Relic HTTP client so a slow or unresponsive API cannot block discovery, status checks or event delivery indefinitely
+
 ## v1.0.19
 
 - chore(deps): bump alpine from 3.23 to 3.24

@@ -328,13 +328,17 @@ func toMetric(incident types.Incident, now time.Time) action_kit_api.Metric {
 	if len(title) == 0 {
 		title = incident.Title
 	}
+	description := ""
+	if len(incident.Description) > 0 {
+		description = incident.Description[0]
+	}
 	return action_kit_api.Metric{
 		Name: new("new_relic_incidents"),
 		Metric: map[string]string{
 			"newrelic.incident-id": incident.IncidentId,
 			"title":                title,
 			"state":                "danger",
-			"tooltip":              fmt.Sprintf("Priority: %s\nTitle: %s\nDescription: %s\nEntity: %s", incident.Priority, incident.Title, incident.Description[0], incident.EntityNames),
+			"tooltip":              fmt.Sprintf("Priority: %s\nTitle: %s\nDescription: %s\nEntity: %s", incident.Priority, incident.Title, description, incident.EntityNames),
 		},
 		Timestamp: now,
 		Value:     0,

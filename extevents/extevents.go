@@ -73,10 +73,17 @@ func handle(handler eventHandler) func(w http.ResponseWriter, r *http.Request, b
 
 		if request, err := handler(&event); err == nil {
 			if request != nil {
-				for _, accountId := range accountCache.Get(accountCacheKey).Value() {
-					eventErr := config.Config.PostEvent(r.Context(), request, accountId)
-					if eventErr != nil {
-						log.Err(eventErr).Int64("accountId", accountId).Msgf("Failed to send event to New Relic.")
+				// Get returns nil when the loader failed to fetch accounts (e.g. New Relic
+				// unreachable); guard against it instead of dereferencing a nil item.
+				accountItem := accountCache.Get(accountCacheKey)
+				if accountItem == nil {
+					log.Warn().Msg("No New Relic accounts available; skipping event delivery.")
+				} else {
+					for _, accountId := range accountItem.Value() {
+						eventErr := config.Config.PostEvent(r.Context(), request, accountId)
+						if eventErr != nil {
+							log.Err(eventErr).Int64("accountId", accountId).Msgf("Failed to send event to New Relic.")
+						}
 					}
 				}
 			}

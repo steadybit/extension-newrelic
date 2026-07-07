@@ -1,9 +1,17 @@
 # Changelog
 
-## Unreleased
+## v1.0.20
 
-- fix: escape values interpolated into New Relic GraphQL queries and build the request envelope with a JSON encoder, preventing query/JSON injection via muting-rule name/description, workload/entity guids and incident priorities
+- Merge pull request #93 from steadybit/feat/add-claude-workflows
+- chore(deps): bump github.com/jellydator/ttlcache/v3 from 3.4.0 to 3.4.1
+- chore(deps): bump github.com/steadybit/action-kit/go/action_kit_sdk
+- chore(deps): bump github.com/steadybit/discovery-kit/go/discovery_kit_sdk
+- chore(deps): bump github.com/steadybit/event-kit/go/event_kit_api
+- chore(deps): bump github.com/steadybit/extension-kit
+- chore: silence SonarQube finding on secrets: inherit in Claude workflows
 - fix: do not panic when delivering events while New Relic accounts could not be loaded, or when an incident has no description
+- fix: escape values interpolated into New Relic GraphQL queries and build the request envelope with a JSON encoder, preventing query/JSON injection via muting-rule name/description, workload/entity guids and incident priorities
+- fix: prevent GraphQL injection and handler panics in New Relic calls (#94)
 - fix: set a timeout on the New Relic HTTP client so a slow or unresponsive API cannot block discovery, status checks or event delivery indefinitely
 
 ## v1.0.19

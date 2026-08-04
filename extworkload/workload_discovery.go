@@ -101,8 +101,10 @@ func getAllWorkloads(ctx context.Context, api GetWorkloadsApi) []discovery_kit_a
 	for _, accountId := range accounts {
 		workloads, err := api.GetWorkloads(ctx, accountId)
 		if err != nil {
+			// Keep going: a single account the API key's user isn't authorized for must not
+			// hide the workloads of all remaining accounts.
 			log.Err(err).Int64("accountId", accountId).Msgf("Failed to get workloads from New Relic.")
-			return result
+			continue
 		}
 
 		for _, workload := range workloads {

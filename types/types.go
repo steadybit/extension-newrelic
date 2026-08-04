@@ -1,5 +1,10 @@
 package types
 
+import (
+	"fmt"
+	"strings"
+)
+
 type EventType string
 
 const (
@@ -94,8 +99,40 @@ type GraphQlResponseTags struct {
 
 type GraphQlResponseError struct {
 	Message string `json:"message"`
+	// Path is the field the error refers to. Elements are either field names or list
+	// indices, hence []any.
+	Path       []any                           `json:"path"`
+	Extensions *GraphQlResponseErrorExtensions `json:"extensions"`
+}
+
+type GraphQlResponseErrorExtensions struct {
+	ErrorClass string `json:"errorClass"`
+	Code       string `json:"code"`
 }
 
 func (e *GraphQlResponseError) Error() string {
 	return e.Message
+}
+
+// String renders the error including the field path and the error class, e.g.
+// `actor.account.workload: user's role doesn't permit this action (UNAUTHORIZED)`.
+// The message alone doesn't say which part of the query New Relic rejected.
+func (e *GraphQlResponseError) String() string {
+	var sb strings.Builder
+	for i, segment := range e.Path {
+		if i > 0 {
+			sb.WriteString(".")
+		}
+		_, _ = fmt.Fprint(&sb, segment)
+	}
+	if sb.Len() > 0 {
+		sb.WriteString(": ")
+	}
+	sb.WriteString(e.Message)
+	if e.Extensions != nil && e.Extensions.ErrorClass != "" {
+		sb.WriteString(" (")
+		sb.WriteString(e.Extensions.ErrorClass)
+		sb.WriteString(")")
+	}
+	return sb.String()
 }

@@ -55,6 +55,21 @@ func graphQlString(value string) string {
 	return string(encoded)
 }
 
+// graphQlErrors renders the GraphQL-level errors of a response as a single string, or
+// "" if there are none. New Relic answers authorization problems ("user's role doesn't
+// permit this action") and field timeouts with HTTP 200 and a populated `errors` array,
+// so these are the only indication that a query returned partial or no data.
+func graphQlErrors(result *types.GraphQlResponse) string {
+	if result.Errors == nil || len(*result.Errors) == 0 {
+		return ""
+	}
+	messages := make([]string, 0, len(*result.Errors))
+	for i := range *result.Errors {
+		messages = append(messages, (*result.Errors)[i].String())
+	}
+	return strings.Join(messages, "; ")
+}
+
 func ParseConfiguration() {
 	err := envconfig.Process("steadybit_extension", &Config)
 	if err != nil {
@@ -89,8 +104,13 @@ func (s *Specification) GetAccountIds(_ context.Context) ([]int64, error) {
 			log.Error().Err(err).Str("body", string(responseBody)).Msgf("Failed to parse body")
 			return nil, err
 		}
-		if result.Errors != nil && len(*result.Errors) > 0 {
-			log.Warn().Msgf("API returned errors %+v", result.Errors)
+		if errs := graphQlErrors(&result); errs != "" {
+			log.Warn().Str("operation", "accounts").Str("errors", errs).Msg("New Relic API returned errors.")
+		}
+
+		if result.Data == nil || result.Data.Actor == nil {
+			log.Error().Str("body", string(responseBody)).Msg("Response contains no accounts.")
+			return nil, errors.New("unexpected response body")
 		}
 
 		accounts := make([]int64, 0, len(result.Data.Actor.Accounts))
@@ -128,8 +148,12 @@ func (s *Specification) GetWorkloads(_ context.Context, accountId int64) ([]type
 			log.Error().Err(err).Str("body", string(responseBody)).Msgf("Failed to parse body")
 			return nil, err
 		}
-		if result.Errors != nil && len(*result.Errors) > 0 {
-			log.Warn().Msgf("API returned errors %+v", result.Errors)
+		if errs := graphQlErrors(&result); errs != "" {
+			log.Warn().Str("operation", "workloads").Int64("accountId", accountId).Str("errors", errs).Msg("New Relic API returned errors.")
+		}
+		if result.Data == nil || result.Data.Actor == nil || result.Data.Actor.Account == nil || result.Data.Actor.Account.Workload == nil {
+			log.Error().Int64("accountId", accountId).Str("body", string(responseBody)).Msg("Response contains no workloads.")
+			return nil, errors.New("unexpected response body")
 		}
 		return result.Data.Actor.Account.Workload.Collections, err
 	} else {
@@ -161,10 +185,11 @@ func (s *Specification) GetWorkloadStatus(_ context.Context, workloadGuid string
 			log.Error().Err(err).Str("body", string(responseBody)).Msgf("Failed to parse body")
 			return nil, err
 		}
-		if result.Errors != nil && len(*result.Errors) > 0 {
-			log.Warn().Msgf("API returned errors %+v", result.Errors)
+		if errs := graphQlErrors(&result); errs != "" {
+			log.Warn().Str("operation", "workloadStatus").Int64("accountId", accountId).Str("workloadGuid", workloadGuid).Str("errors", errs).Msg("New Relic API returned errors.")
 		}
-		if result.Data.Actor.Account.Workload.Collection != nil && result.Data.Actor.Account.Workload.Collection.Status != nil {
+		if result.Data != nil && result.Data.Actor != nil && result.Data.Actor.Account != nil && result.Data.Actor.Account.Workload != nil &&
+			result.Data.Actor.Account.Workload.Collection != nil && result.Data.Actor.Account.Workload.Collection.Status != nil {
 			return &result.Data.Actor.Account.Workload.Collection.Status.Value, err
 		}
 		//Workaround - New Relic has regular timeouts
@@ -202,6 +227,10 @@ func (s *Specification) CreateMutingRule(_ context.Context, accountId int64, nam
 		}
 		if result.Data != nil && result.Data.AlertsMutingRuleCreate != nil {
 			return &result.Data.AlertsMutingRuleCreate.Id, err
+		}
+		if errs := graphQlErrors(&result); errs != "" {
+			log.Error().Str("operation", "createMutingRule").Int64("accountId", accountId).Str("errors", errs).Msg("New Relic API returned errors.")
+			return nil, fmt.Errorf("New Relic API returned errors: %s", errs)
 		}
 		log.Error().Err(err).Msgf("Unexpected response body %+v", string(responseBody))
 		return nil, errors.New("unexpected response body")
@@ -252,11 +281,11 @@ func (s *Specification) GetEntityTags(_ context.Context, guid string) (map[strin
 			log.Error().Err(err).Str("body", string(responseBody)).Msgf("Failed to parse body")
 			return nil, err
 		}
-		if result.Errors != nil && len(*result.Errors) > 0 {
-			log.Warn().Msgf("API returned errors %+v", result.Errors)
+		if errs := graphQlErrors(&result); errs != "" {
+			log.Warn().Str("operation", "entityTags").Str("entityGuid", guid).Str("errors", errs).Msg("New Relic API returned errors.")
 		}
 
-		if len(result.Data.Actor.Entities) == 1 {
+		if result.Data != nil && result.Data.Actor != nil && len(result.Data.Actor.Entities) == 1 {
 			tags := make(map[string][]string)
 			for _, tag := range result.Data.Actor.Entities[0].Tags {
 				tags[tag.Key] = tag.Values
@@ -301,11 +330,18 @@ func (s *Specification) GetIncidents(_ context.Context, incidentPriorityFilter [
 			log.Error().Err(err).Str("body", string(responseBody)).Msgf("Failed to parse body")
 			return nil, err
 		}
-		if result.Errors != nil && len(*result.Errors) > 0 {
-			log.Warn().Msgf("API returned errors %+v", result.Errors)
+		errs := graphQlErrors(&result)
+		if errs != "" {
+			log.Warn().Str("operation", "incidents").Int64("accountId", accountId).Str("errors", errs).Msg("New Relic API returned errors.")
 		}
-		if result.Data != nil && result.Data.Actor.Account != nil && result.Data.Actor.Account.AiIssues != nil && result.Data.Actor.Account.AiIssues.Incidents != nil {
+		if result.Data != nil && result.Data.Actor != nil && result.Data.Actor.Account != nil && result.Data.Actor.Account.AiIssues != nil && result.Data.Actor.Account.AiIssues.Incidents != nil {
 			return result.Data.Actor.Account.AiIssues.Incidents.Incidents, err
+		}
+		// No incidents payload at all. If New Relic reported errors (a missing permission
+		// answers with `aiIssues: null` and HTTP 200) we must not report an empty list:
+		// the incident check would read that as "no incidents" and silently pass.
+		if errs != "" {
+			return nil, fmt.Errorf("New Relic API returned errors: %s", errs)
 		}
 		return []types.Incident{}, nil
 	} else {

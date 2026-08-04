@@ -81,7 +81,50 @@ func ValidateConfiguration() {
 	// You may optionally validate the configuration here.
 }
 
-const accountsQuery = `{actor {accounts {id}}}`
+// accountsQuery asks for the organization's managed accounts, which is the authoritative
+// list of accounts to operate on. `actor.accounts` alone is not: it also contains the
+// organization's storage account, an internal account holding organization-level data that
+// no role has workload, incident or event permissions on, so querying it yields nothing but
+// permission errors.
+//
+// Reading the organization requires a permission the API key's user may not have, so
+// `actor.accounts` and `storageAccountId` are requested in the same round trip as a
+// fallback - see accountIds.
+const accountsQuery = `{actor {accounts {id} organization {accountManagement {managedAccounts {id isCanceled}} storageAccountId}}}`
+
+// accountIds picks the accounts to operate on, preferring the organization's managed
+// accounts. It reports whether that list was available; if it wasn't, it falls back to
+// `actor.accounts` without the storage account.
+func accountIds(actor *types.GraphQlResponseActor) ([]int64, bool) {
+	var storageAccountId int64
+	if actor.Organization != nil {
+		if actor.Organization.StorageAccountId != nil {
+			storageAccountId = *actor.Organization.StorageAccountId
+		}
+		if actor.Organization.AccountManagement != nil && len(actor.Organization.AccountManagement.ManagedAccounts) > 0 {
+			managed := actor.Organization.AccountManagement.ManagedAccounts
+			accounts := make([]int64, 0, len(managed))
+			for _, account := range managed {
+				if account.IsCanceled {
+					continue
+				}
+				accounts = append(accounts, account.Id)
+			}
+			return accounts, true
+		}
+	}
+
+	accounts := make([]int64, 0, len(actor.Accounts))
+	for _, account := range actor.Accounts {
+		// Without the organization we cannot know the storage account id, so this only
+		// filters it out when `storageAccountId` alone was readable.
+		if account.Id == storageAccountId {
+			continue
+		}
+		accounts = append(accounts, account.Id)
+	}
+	return accounts, false
+}
 
 func (s *Specification) GetAccountIds(_ context.Context) ([]int64, error) {
 	url := fmt.Sprintf("%s/graphql", s.ApiBaseUrl)
@@ -104,19 +147,25 @@ func (s *Specification) GetAccountIds(_ context.Context) ([]int64, error) {
 			log.Error().Err(err).Str("body", string(responseBody)).Msgf("Failed to parse body")
 			return nil, err
 		}
-		if errs := graphQlErrors(&result); errs != "" {
-			log.Warn().Str("operation", "accounts").Str("errors", errs).Msg("New Relic API returned errors.")
-		}
+		errs := graphQlErrors(&result)
 
 		if result.Data == nil || result.Data.Actor == nil {
-			log.Error().Str("body", string(responseBody)).Msg("Response contains no accounts.")
+			log.Error().Str("operation", "accounts").Str("errors", errs).Str("body", string(responseBody)).Msg("Response contains no accounts.")
 			return nil, errors.New("unexpected response body")
 		}
 
-		accounts := make([]int64, 0, len(result.Data.Actor.Accounts))
-		for _, account := range result.Data.Actor.Accounts {
-			accounts = append(accounts, account.Id)
+		accounts, managed := accountIds(result.Data.Actor)
+		if errs != "" {
+			// Not being allowed to read the organization is expected for some API keys and
+			// handled by the fallback, so it is only worth a warning if it cost us the
+			// authoritative account list.
+			event := log.Debug()
+			if !managed {
+				event = log.Warn()
+			}
+			event.Str("operation", "accounts").Str("errors", errs).Msg("New Relic API returned errors.")
 		}
+		log.Debug().Bool("managedAccounts", managed).Ints64("accounts", accounts).Msg("Resolved New Relic accounts.")
 
 		return accounts, err
 	} else {

@@ -230,7 +230,7 @@ func (s *Specification) CreateMutingRule(_ context.Context, accountId int64, nam
 		}
 		if errs := graphQlErrors(&result); errs != "" {
 			log.Error().Str("operation", "createMutingRule").Int64("accountId", accountId).Str("errors", errs).Msg("New Relic API returned errors.")
-			return nil, fmt.Errorf("New Relic API returned errors: %s", errs)
+			return nil, fmt.Errorf("errors returned by the New Relic API: %s", errs)
 		}
 		log.Error().Err(err).Msgf("Unexpected response body %+v", string(responseBody))
 		return nil, errors.New("unexpected response body")
@@ -341,7 +341,7 @@ func (s *Specification) GetIncidents(_ context.Context, incidentPriorityFilter [
 		// answers with `aiIssues: null` and HTTP 200) we must not report an empty list:
 		// the incident check would read that as "no incidents" and silently pass.
 		if errs != "" {
-			return nil, fmt.Errorf("New Relic API returned errors: %s", errs)
+			return nil, fmt.Errorf("errors returned by the New Relic API: %s", errs)
 		}
 		return []types.Incident{}, nil
 	} else {

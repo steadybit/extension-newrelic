@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- fix: fail the incident check instead of reporting "no incidents" when New Relic rejects the incidents query, e.g. because the API key's user lacks the required role
+- fix: log the operation, account and rejected field path for New Relic GraphQL errors, which are reported with HTTP 200 and were previously logged without any hint about which query failed
+- fix: do not panic when New Relic answers with a null `data`, `workload` or `aiIssues` payload, as it does for queries the API key's user is not permitted to run
+- fix: continue workload discovery with the remaining accounts when one account cannot be read
+
 ## v1.0.23
 
 - chore(deps): update dependencies

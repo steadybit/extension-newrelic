@@ -159,6 +159,84 @@ func TestGetAccountIdsWithNullData(t *testing.T) {
 	}
 }
 
+// The organization's managed accounts are authoritative: the storage account
+// (4942247 here) must not be operated on, only the managed account (2847806).
+func TestGetAccountIdsUsesManagedAccounts(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"data":{"actor":{"accounts":[{"id":2847806},{"id":4942247}],"organization":{"accountManagement":{"managedAccounts":[{"id":2847806,"isCanceled":false}]},"storageAccountId":4942247}}}}`))
+	}))
+	defer server.Close()
+
+	s := &Specification{ApiBaseUrl: server.URL, ApiKey: "test-key"}
+
+	accounts, err := s.GetAccountIds(context.Background())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(accounts) != 1 || accounts[0] != 2847806 {
+		t.Errorf("expected only the managed account 2847806, got %v", accounts)
+	}
+}
+
+func TestGetAccountIdsSkipsCanceledAccounts(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"data":{"actor":{"organization":{"accountManagement":{"managedAccounts":[{"id":1,"isCanceled":false},{"id":2,"isCanceled":true}]},"storageAccountId":9}}}}`))
+	}))
+	defer server.Close()
+
+	s := &Specification{ApiBaseUrl: server.URL, ApiKey: "test-key"}
+
+	accounts, err := s.GetAccountIds(context.Background())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(accounts) != 1 || accounts[0] != 1 {
+		t.Errorf("expected only the active account 1, got %v", accounts)
+	}
+}
+
+// An API key whose user may not read the organization must keep working: fall back to
+// actor.accounts, still without the storage account if that field alone was readable.
+func TestGetAccountIdsFallsBackToActorAccounts(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"data":{"actor":{"accounts":[{"id":2847806},{"id":4942247}],"organization":{"accountManagement":null,"storageAccountId":4942247}}},"errors":[{"path":["actor","organization","accountManagement"],"message":"user's role doesn't permit this action"}]}`))
+	}))
+	defer server.Close()
+
+	s := &Specification{ApiBaseUrl: server.URL, ApiKey: "test-key"}
+
+	accounts, err := s.GetAccountIds(context.Background())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(accounts) != 1 || accounts[0] != 2847806 {
+		t.Errorf("expected the storage account to be filtered out, got %v", accounts)
+	}
+}
+
+// Without any organization data there is nothing to filter by - keep the old behaviour
+// rather than reporting no accounts at all.
+func TestGetAccountIdsFallsBackWithoutOrganization(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"data":{"actor":{"accounts":[{"id":2847806}],"organization":null}},"errors":[{"path":["actor","organization"],"message":"user's role doesn't permit this action"}]}`))
+	}))
+	defer server.Close()
+
+	s := &Specification{ApiBaseUrl: server.URL, ApiKey: "test-key"}
+
+	accounts, err := s.GetAccountIds(context.Background())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(accounts) != 1 || accounts[0] != 2847806 {
+		t.Errorf("expected the accounts from actor.accounts, got %v", accounts)
+	}
+}
+
 // A permission error on the workload query yields `workload: null` - must not panic.
 func TestGetWorkloadsWithNullWorkload(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

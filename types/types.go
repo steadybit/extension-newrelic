@@ -53,9 +53,26 @@ type GraphQlResponseAlertsMutingRuleCreate struct {
 	Id string `json:"id"`
 }
 type GraphQlResponseActor struct {
-	Account  *GraphQlResponseAccount   `json:"account"`
-	Accounts []GraphQlResponseAccounts `json:"accounts"`
-	Entities []GraphQlResponseEntities `json:"entities"`
+	Account      *GraphQlResponseAccount      `json:"account"`
+	Accounts     []GraphQlResponseAccounts    `json:"accounts"`
+	Entities     []GraphQlResponseEntities    `json:"entities"`
+	Organization *GraphQlResponseOrganization `json:"organization"`
+}
+
+type GraphQlResponseOrganization struct {
+	AccountManagement *GraphQlResponseAccountManagement `json:"accountManagement"`
+	// StorageAccountId is the organization's internal storage account. It shows up in
+	// `actor.accounts` but is not an account to operate on.
+	StorageAccountId *int64 `json:"storageAccountId"`
+}
+
+type GraphQlResponseAccountManagement struct {
+	ManagedAccounts []GraphQlResponseManagedAccount `json:"managedAccounts"`
+}
+
+type GraphQlResponseManagedAccount struct {
+	Id         int64 `json:"id"`
+	IsCanceled bool  `json:"isCanceled"`
 }
 type GraphQlResponseAccount struct {
 	Workload *WorkloadResponse `json:"workload"`

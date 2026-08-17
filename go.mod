@@ -15,7 +15,7 @@ require (
 	github.com/steadybit/discovery-kit/go/discovery_kit_test v1.2.1
 	github.com/steadybit/event-kit/go/event_kit_api v1.6.3
 	github.com/steadybit/extension-kit v1.11.1
-	github.com/stretchr/testify v1.11.1
+	github.com/stretchr/testify v1.12.0
 	k8s.io/utils v0.0.0-20260707023825-cf1189d6abe3
 )
 
@@ -58,7 +58,6 @@ require (
 	github.com/oapi-codegen/runtime v1.6.0 // indirect
 	github.com/oasdiff/yaml v0.1.1 // indirect
 	github.com/oasdiff/yaml3 v0.0.14 // indirect
-	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/procfs v0.21.1 // indirect
 	github.com/rs/xid v1.6.0 // indirect
 	github.com/santhosh-tekuri/jsonschema/v6 v6.0.2 // indirect

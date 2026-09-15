@@ -78,7 +78,21 @@ func ParseConfiguration() {
 }
 
 func ValidateConfiguration() {
-	// You may optionally validate the configuration here.
+	// envconfig's `required:"true"` only checks that the variable is *set*: an empty
+	// value satisfies it, so the extension would start with a blank configuration and
+	// fail much later against the target system. Reject blank values here instead.
+	if strings.TrimSpace(Config.ApiBaseUrl) == "" {
+		log.Fatal().Msg("STEADYBIT_EXTENSION_API_BASE_URL must not be empty.")
+	}
+	if strings.TrimSpace(Config.ApiKey) == "" {
+		log.Fatal().Msg("STEADYBIT_EXTENSION_API_KEY must not be empty.")
+	}
+	if strings.TrimSpace(Config.InsightsCollectorApiBaseUrl) == "" {
+		log.Fatal().Msg("STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_BASE_URL must not be empty.")
+	}
+	if strings.TrimSpace(Config.InsightsCollectorApiKey) == "" {
+		log.Fatal().Msg("STEADYBIT_EXTENSION_INSIGHTS_COLLECTOR_API_KEY must not be empty.")
+	}
 }
 
 // accountsQuery asks for the organization's managed accounts, which is the authoritative

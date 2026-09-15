@@ -34,8 +34,8 @@ func TestWithMinikube(t *testing.T) {
 				"--set", "logging.level=debug",
 				"--set", "newrelic.apiKey=api-key-123",
 				"--set", fmt.Sprintf("newrelic.apiBaseUrl=http://host.minikube.internal:%s", port),
-				"--set", fmt.Sprintf("newrelic.insightsApiBaseUrl=http://host.minikube.internal:%s", port),
-				"--set", "newrelic.insightsInsertKey=insert-key-123",
+				"--set", fmt.Sprintf("newrelic.insightsCollectorApiBaseUrl=http://host.minikube.internal:%s", port),
+				"--set", "newrelic.insightsCollectorApiKey=insights-collector-api-key-123",
 			}
 		},
 	}

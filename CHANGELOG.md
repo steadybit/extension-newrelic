@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.31
+
+- Maintenance release
+
 ## v1.0.30
 
 - chore(deps): bump golang.org/x/net to v0.61.0

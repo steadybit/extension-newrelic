@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.0.32
+
+- chore(deps): bump github.com/steadybit/action-kit/go/action_kit_test
+- chore(deps): bump github.com/steadybit/extension-kit
+
 ## v1.0.31
 
 - Maintenance release

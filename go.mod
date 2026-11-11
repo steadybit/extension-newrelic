@@ -11,10 +11,10 @@ require (
 	github.com/steadybit/action-kit/go/action_kit_sdk v1.4.1
 	github.com/steadybit/action-kit/go/action_kit_test v1.4.13
 	github.com/steadybit/discovery-kit/go/discovery_kit_api v1.7.2
-	github.com/steadybit/discovery-kit/go/discovery_kit_sdk v1.4.2
+	github.com/steadybit/discovery-kit/go/discovery_kit_sdk v1.5.0
 	github.com/steadybit/discovery-kit/go/discovery_kit_test v1.2.2
 	github.com/steadybit/event-kit/go/event_kit_api v1.6.4
-	github.com/steadybit/extension-kit v1.12.2
+	github.com/steadybit/extension-kit v1.12.3
 	github.com/stretchr/testify v1.12.1
 	k8s.io/utils v0.0.0-20260707023825-cf1189d6abe3
 )

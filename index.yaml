@@ -2,6 +2,32 @@ apiVersion: v1
 entries:
   steadybit-extension-newrelic:
   - annotations:
+      artifacthub.io/links: |-
+        - name: Steadybit website
+          url: https://www.steadybit.com
+        - name: Steadybit reliability hub
+          url: https://hub.steadybit.com
+    apiVersion: v2
+    appVersion: v1.0.35
+    created: "2026-11-23T09:54:37.070352928Z"
+    dependencies:
+    - name: extensionlib
+      repository: https://steadybit.github.io/helm-charts
+      version: ^1.6.0
+    description: Steadybit newrelic extension Helm chart for Kubernetes.
+    digest: 14e06f292ffd0f10083dec77f44005ffb220ce4265550a42405c4b7f0acd2d15
+    home: https://www.steadybit.com/
+    icon: https://steadybit-website-assets.s3.amazonaws.com/logo-symbol-transparent.png
+    maintainers:
+    - email: daniel.reuter@steadybit.com
+      name: reuda
+    name: steadybit-extension-newrelic
+    sources:
+    - https://github.com/steadybit/extension-newrelic
+    urls:
+    - https://github.com/steadybit/extension-newrelic/releases/download/steadybit-extension-newrelic-1.1.42/steadybit-extension-newrelic-1.1.42.tgz
+    version: 1.1.42
+  - annotations:
       artifacthub.io/images: |
         - name: logo
           image: https://steadybit-website-assets.s3.amazonaws.com/logo-symbol-transparent.png
@@ -1277,4 +1303,4 @@ entries:
     urls:
     - https://github.com/steadybit/extension-newrelic/releases/download/steadybit-extension-newrelic-1.0.0/steadybit-extension-newrelic-1.0.0.tgz
     version: 1.0.0
-generated: "2026-11-16T06:28:07.05823101Z"
+generated: "2026-11-23T09:54:37.070558885Z"
